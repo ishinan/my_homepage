@@ -22,26 +22,61 @@ Plan:
 import os
 
 
-# Make a list of content files
-for curr, dirs, list_content_files in os.walk('contents'):
-    #print(list_content_files)
-    for content_file in list_content_files:
-        # Read top.html and write to a target file
-        content_path = os.path.join(curr, content_file)
-        target_path = os.path.join('docs', content_file)
+def build_html_files_01():
+    '''
+    This function opens the target file three times to append top.html content html and bottom.html
+    '''
+    # Make a list of content files
+    for curr, dirs, list_content_files in os.walk('contents'):
+        #print(list_content_files)
+        for content_file in list_content_files:
+            
+            # Creating paths to contents html and target html
+            content_path = os.path.join(curr, content_file)
+            target_path = os.path.join('docs', content_file)
 
-        with open('templates/top.html', 'r') as f_content, open(target_path, 'w') as f_target:
-            contents = f_content.readlines()
-            f_target.writelines(contents)
+            # Read top.html and write to a target file
+            with open('templates/top.html', 'r') as f_content, open(target_path, 'w') as f_target:
+                contents = f_content.readlines()
+                f_target.writelines(contents)
 
-        # Read a content html and write to a target file
-        with open(content_path, 'r') as f_content, open(target_path, 'a') as f_target:
-            contents = f_content.readlines()
-            f_target.writelines(contents)
+            # Read a content html and write to a target file
+            with open(content_path, 'r') as f_content, open(target_path, 'a') as f_target:
+                contents = f_content.readlines()
+                f_target.writelines(contents)
 
         # Read bottom html and write to a target file
         with open('templates/bottom.html', 'r') as f_content, open(target_path, 'a') as f_target:
             contents = f_content.readlines()
             f_target.writelines(contents)
 
+
+def build_html_files_02():
+    '''
+    This function opens the target file once
+    '''
+    # Make a list of content files
+    for curr, dirs, list_content_files in os.walk('contents'):
+        #print(list_content_files)
+        for content_file in list_content_files:
+            
+            # Creating paths to contents html and target html
+            content_path = os.path.join(curr, content_file)
+            target_path = os.path.join('docs', content_file)
+
+            # Build the contents of html
+            list_files_to_combine = ['templates/top.html', content_path, 'templates/bottom.html' ]
+            full_contents = []
+            for file_to_combine in list_files_to_combine:
+                with open(file_to_combine , 'r') as f_content:
+                    contents = f_content.readlines()
+                full_contents += contents
+
+            # Write to a target file once
+            with open(target_path, 'w') as f_target:
+                f_target.writelines(full_contents)
+
+
+if __name__ == "__main__":
+    build_html_files_02()
         

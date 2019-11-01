@@ -12,14 +12,14 @@ Change Log:
     - N/A
 
 Plan:
-    - N/A
+    - Check Directories
+    - Read files 
+    - Write contets to a html file in docs directory
+    - Add test_build.py and run unittest
+    - Use function style
+    - Add arguements for debugging, test and revert 
 """
 import os
-# Check Directories
-# Read files 
-# Write contets to a html file in docs directory
-
-
 
 
 # Make a list of content files
@@ -44,6 +44,4 @@ for curr, dirs, list_content_files in os.walk('contents'):
             contents = f_content.readlines()
             f_target.writelines(contents)
 
-# for file_content in list_content_files:  
-#     with open(file_content, 'r') as f_to_read, open(file_target, "wa"):
         

@@ -1,5 +1,6 @@
 
-/* .jumbotron-project {
+.jumbotron-project {
     background-image: url("../images/skye_from_jacklondon.jpg");
+    background-size: cover;
     color: white;
-} */
+}

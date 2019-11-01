@@ -13,10 +13,7 @@ Change Log:
 
 Plan:
     - Check Directories
-    - Read files 
-    - Write contets to a html file in docs directory
     - Add test_build.py and run unittest
-    - Use function style
     - Add arguements for debugging, test and revert 
 """
 import os

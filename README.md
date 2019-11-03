@@ -1,6 +1,20 @@
 # My Simple Website
 
-# Directory Structure
+## Static Site Generator
+
+A generator(`build.py` or `build.sh`) generate static html files based on top.html, bottom.html, and a content htlm.
+
+### build.py
+
+This script simply combines top.html, a content html, and bottom.html and write output
+to a html file. More functional than `build.sh`
+
+### build.sh
+
+This script simply combines top.html, a content html, and bottom.html and write output
+to a html file
+
+## Directory Structure
 
 ```text
  my_homepage
@@ -21,7 +35,7 @@
      └── index.html
 ```
 
-# Color Scheme
+## Color Scheme
 
 [Selected Color Palette](https://colorhunt.co/palette/158293)
 - #42b883
@@ -29,7 +43,7 @@
 - #35495e
 - #ff7e67
 
-# Fonts
+## Fonts
 
 - Body:  Arial, Helvetica, sans-serif
 

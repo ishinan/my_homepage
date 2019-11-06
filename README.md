@@ -40,20 +40,15 @@ to a html file
 │       ├── linkedin.svg
 │       ...
 |
-├── index.html
-├── blog.html
-├── projects.html
-├── contact.html
-|
 ├── contents
 │   ├── blog.html
 │   ├── contact.html
 │   ├── index.html
 │   └── projects.html
-|
 ├── templates
 │   ├── bottom.html
 │   └── top.html
+|
 └── tests
     └── test_build.py
 ```
@@ -61,10 +56,11 @@ to a html file
 # Color Scheme
 
 [Selected Color Palette](https://colorhunt.co/palette/158293)
-- #42b883
-- #347474
-- #35495e
-- #ff7e67
+- #FAF9FA for body background
+- #347474 for a tags
+- #42b883 for hovered a tags
+- #B34C3B for contact page item titles
+
 
 # Fonts
 

@@ -6,7 +6,7 @@ A generator(`build.py` or `build.sh`) generate static html files based on top.ht
 
 ### build.py
 
-This script simply combines top.html, a content html, and bottom.html and write output
+This script simply combines template file(s), a content html, then write output
 to a html file. More functional than `build.sh`
 
 ### build.sh
@@ -24,6 +24,21 @@ to a html file
 ├── build.py
 ├── build.sh
 |
+├── contents (Contents matching with top.html and bottom.html)
+│   ├── blog.html
+│   ├── contact.html
+│   ├── index.html
+│   └── projects.html
+├── contents02 (Contents matching with one_template.html)
+│   ├── blog.html
+│   ├── contact.html
+│   ├── index.html
+│   └── projects.html
+├── templates
+│   ├── one_template.html
+│   ├── top.html
+│   └── bottom.html
+|
 ├── docs
 │   ├── index.html
 │   ├── blog.html
@@ -40,15 +55,6 @@ to a html file
 │       ├── linkedin.svg
 │       ...
 |
-├── contents
-│   ├── blog.html
-│   ├── contact.html
-│   ├── index.html
-│   └── projects.html
-├── templates
-│   ├── bottom.html
-│   └── top.html
-|
 └── tests
     └── test_build.py
 ```
@@ -61,11 +67,8 @@ to a html file
 - #42b883 for hovered a tags
 - #B34C3B for contact page item titles
 
-
 ## Fonts
 
 - Body:  Arial, Helvetica, sans-serif
-
 - Lato Bold, sans-serif
-
 - Monospace: Courier New

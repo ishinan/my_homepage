@@ -19,16 +19,64 @@ Plan:
 import os
 import logging
 import logging.config
+from string import Template
+
 
 
 # Read log.cfg file for loggeing congiguration
 logging.config.fileConfig('log.cfg')
 
+def build_html_files_one_template(content_dir, target_dir):
+    '''
+    This function read one template html
+    Relapace the contents and title and nav's active by tempalate module
+    This function opens the target file once
+    '''
+    title_data = {
+        'index': 'Home',
+        'blog': 'Blog',
+        'projects': 'Projects',
+        'contact':  'Contact',
+    }
+
+    # Read from one_template.html
+    with open('templates/one_template.html', 'r') as f:
+        template_html  = f.read()
+    template = Template(template_html)
+
+    # Make a list of content files
+    for curr, dirs, list_content_files in os.walk(content_dir):
+        #print(list_content_files)
+        for content_file in list_content_files:
+            # Creating paths to contents html and target html
+            content_path = os.path.join(curr, content_file)
+            target_path = os.path.join(target_dir, content_file)
+            html_name = content_file.replace(".html", "")
+
+            # Build the contents of html
+            with open(content_path , 'r') as f_content:
+                content = f_content.read()
+
+            # print(type(content))
+            # print(title_data[html_name])
+            # print(template)
+
+            full_contents = template.safe_substitute(
+                   title = title_data[html_name],
+                   html_content = content
+                )
+
+            full_contents = full_contents.replace(f"\" href=\"./{html_name}", f" active\" href=\"./{html_name}")
+
+            # Write to a target file once
+            with open(target_path, 'w') as f_target:
+                f_target.writelines(full_contents)
+
 
 def build_html_files(content_dir, target_dir):
     '''
-    This function opens the top and bottom files once
-    This function opens the target file once
+    This function read the top and bottom files once
+    This function write the target file once
     '''
     part_top = [] 
     part_bottom = []
@@ -59,5 +107,5 @@ def build_html_files(content_dir, target_dir):
 
 
 if __name__ == "__main__":
-    build_html_files("contents", "docs")
-        
+    #build_html_files("contents", "docs")
+    build_html_files_one_template("contents02", "docs")

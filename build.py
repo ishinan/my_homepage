@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/local/bin/python3
 """
 Version: 
 Feature:
@@ -25,7 +25,7 @@ import logging.config
 logging.config.fileConfig('log.cfg')
 
 
-def build_html_files_04(content_dir, target_dir):
+def build_html_files(content_dir, target_dir):
     '''
     This function opens the top and bottom files once
     This function opens the target file once
@@ -59,5 +59,5 @@ def build_html_files_04(content_dir, target_dir):
 
 
 if __name__ == "__main__":
-    build_html_files_04("contents", "docs")
+    build_html_files("contents", "docs")
         

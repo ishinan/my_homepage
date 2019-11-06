@@ -76,8 +76,8 @@ def build_html_files_one_template(content_dir, target_dir):
             # Write to a target file once
             with open(target_path, 'w') as f_target:
                 f_target.writelines(full_contents)
+                logger.info(f"wrote the {html_name} to output file: {target_path}")
 
-            logger.info(f"writing to output file: {target_path}")
 
 
 def build_html_files(content_dir, target_dir):

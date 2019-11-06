@@ -33,6 +33,9 @@ def build_html_files_one_template(content_dir, target_dir):
     Add "active" css class for nav by string.replace()
     Write the content to the target file
     '''
+    #logger = logging.getLogger(__name__)
+    logger = logging.getLogger('dev')
+
     # Dict key is html file name, value is string for title tag
     title_data = {
         'index': 'Home',
@@ -40,6 +43,7 @@ def build_html_files_one_template(content_dir, target_dir):
         'projects': 'Projects',
         'contact':  'Contact',
     }
+    logger.debug(f"title_data: {title_data}")
 
     # Read from one_template.html
     with open('templates/one_template.html', 'r') as f:
@@ -53,6 +57,8 @@ def build_html_files_one_template(content_dir, target_dir):
             content_path = os.path.join(curr, content_file)
             target_path = os.path.join(target_dir, content_file)
             html_name = content_file.replace(".html", "")
+
+            logger.debug(f"content path: {content_path}")
 
             # Read a content html
             with open(content_path , 'r') as f_content:
@@ -70,6 +76,8 @@ def build_html_files_one_template(content_dir, target_dir):
             # Write to a target file once
             with open(target_path, 'w') as f_target:
                 f_target.writelines(full_contents)
+
+            logger.info(f"writing to output file: {target_path}")
 
 
 def build_html_files(content_dir, target_dir):

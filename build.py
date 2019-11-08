@@ -3,19 +3,18 @@
 Version: 
 Feature:
     static site generator
-    Read template html files and contents html files, and create html files
+    Read a template html file and contents html files, and create html files
 
 Regquirements
-    - base template html and content html files
+    - 'templates/base.html" and content html files under "content" directory
     - docs directory as destination
 
 Change Log:
     - N/A
 
-Plan:
-    - Check Directories
+Future Plan:
     - Add test_build.py and run unittest
-    - Add arguements for debugging, test and revert 
+    - Add arguements for debugging, test and feature to revert back to previous html files
 """
 import os
 import logging
@@ -38,7 +37,7 @@ title_data = {
 
 def read_template_html(template_file_path=""):
     '''
-    Read from a template html file
+    Read from a template html file and return a Template object
     parameter:
         template_file_path: string to path to a template html file
     return:
@@ -54,11 +53,11 @@ def read_template_html(template_file_path=""):
 
 def read_html_file(file_path):
     '''
-    Read a html exntention file and return its content
+    Read a html exntention file and return its content as string
     parameter: 
         file_path
     return: 
-        content list
+        content string
     '''
     if file_path.endswith('.html'):
         # Read a content html
@@ -71,7 +70,12 @@ def read_html_file(file_path):
 
 def write_html_to_file(file_path, html_content):
     '''
-    Write 
+    Write html contents to a file 
+    parameter:
+        file_path: a path to html file
+        html_content: html content string
+    return: 
+        None
     '''
     if file_path.endswith('.html'):
         # Write to a target file once
@@ -86,14 +90,19 @@ def write_html_to_file(file_path, html_content):
 def create_page_list(content_dir, target_dir):
     '''
     This is a generator.
-    Create a list of content html files from content directory
-    Return a dict of content path, target path, html name(without html extention)
+    Read a list of content html files under a content directory
+    Return a dict of content path, target path, title, html name(without html extention)
     {
-       'content_path': 'contents/index.html'
-       'filename': 'index.html',
-       'target_path': 'docs/index.html',
-       'title: 'Home', 
+        'content_path': 'content/index.html',
+        'html_name': 'index',
+        'target_path': 'docs/index.html',
+        'title': 'Home',
     }
+    parameters:
+        content_dir:
+        target_dir:
+    return:
+        a dictionary of 'content_path', 'html_name', 'target_path', 'title' 
     '''
     for curr_dir, list_dirs, list_files in os.walk(content_dir):
         for content_file in filter(lambda fname: fname.endswith('.html'), list_files):
@@ -112,8 +121,30 @@ def create_page_list(content_dir, target_dir):
                   }
 
 
+def build_full_html(template_content, html_info={}):
+    '''
+    Build Full conetent of html file
+    Return a html content as a html string
+    '''
+    content = read_html_file(html_info['content_path'])
+    html_file = template_content.safe_substitute(
+        title = html_info['title'],
+        html_content = content
+    )
+    # Add "active" css class for nav
+    full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
+
+    return full_content
+
+
 def build_html_files(template_dir, content_dir, target_dir):
     '''
+    Steps:
+        1. Read base.html
+        2. Create a page list 
+        3. Read each content html from page list
+        4. Replace base.html contents based on the page list data 
+        5. Write the result to a html file
     parameter:
         template_dir: dir path to read a template html file
         content_dir: dir path to read a conetnt html file
@@ -121,35 +152,26 @@ def build_html_files(template_dir, content_dir, target_dir):
     return:
         None
         Create html files under target_dir
-
-    Following homework02 
-    1. Create a page list 
-    2. Read base.html
-    3. Read each content html from page list
-    4. Replace base.html contents based on the page list data 
-    5. Write the result to a html file
     '''
-    #logger = logging.getLogger(__name__)
+    logger = logging.getLogger('dev')
 
     # Creating a template object which contains template html file
     template_path = os.path.join(template_dir, 'base.html')
+    logger.debug(f"template file path: {template_path}" )
     template = read_template_html(template_path)
 
     # Create htlm page based on template html and content html files
     for html_info in create_page_list(content_dir, target_dir):
-        content = read_html_file(html_info['content_path'])
-        html_file = template.safe_substitute(
-            title = html_info['title'],
-            html_content = content
-        )
-
-        # Add "active" css class for nav
-        full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
-
+        logger.debug(f"htlm_info: {html_info}")
+        full_content = build_full_html(template, html_info)
         write_html_to_file(html_info['target_path'], full_content)
+        logger.info(f"Created {html_info['target_path']}")
 
 
 def main(template_dir, source_content_dir, target_dir):
+    '''
+    Invoke a function 
+    '''
     build_html_files(template_dir, source_content_dir, target_dir)
 
 

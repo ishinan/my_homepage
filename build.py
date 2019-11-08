@@ -26,6 +26,62 @@ from string import Template
 # Read log.cfg file for loggeing congiguration
 logging.config.fileConfig('log.cfg')
 
+def read_template(template_file_path):
+    '''
+    Read from template html file
+    Return content of template html
+    '''
+    with open(template_file_path, 'r') as f:
+        template_html  = f.read()
+        return Template(template_html)
+
+
+def create_page_lists(content_dir):
+    '''
+    Read html files from content directory and create a page list
+    Return a list of content path, target path, html name(without html extention)
+    pages = [ {
+                'content_path': 'contents/index.html'
+                'filename': 'index.html',
+                'target_path': 'docs/index.html',
+              }
+            ]
+    '''
+    pass
+
+
+def build_html_files02(content_dir, target_dir):
+    '''
+    Following homework02 
+    1. Create a page list 
+    2. Read base.html
+    3. Read each content html from page list
+    4. Replace base.html contents based on the page list data 
+    5. Write the result to a html file
+    '''
+    #logger = logging.getLogger(__name__)
+    logger = logging.getLogger('dev')
+
+    pages = [
+        {
+            "filename": "index.html",
+            "title": "Home"
+        },
+        {
+            "filename": "blog.html",
+            "title": "Blog"
+        },
+        {
+            "filename": "projects.html",
+            "title": "Projects"
+        },
+        {
+            "filename": "contact.html",
+            "title": "Contact"
+        },
+    ]
+
+
 def build_html_files(content_dir, target_dir):
     '''
     This function reads one template html

@@ -126,6 +126,11 @@ def build_full_html(template_content, html_info={}):
     '''
     Build Full conetent of html file
     Return a html content as a html string
+    parameters:
+        template_content: Template object 
+        html_info: a dictionalry 
+    return:
+        a html conetent as a string
     '''
     content = read_html_file(html_info['content_path'])
     html_file = template_content.safe_substitute(

@@ -19,6 +19,7 @@ Future Plan:
 import os
 import logging
 import logging.config
+import inspect
 from string import Template
 
 
@@ -153,7 +154,11 @@ def build_html_files(template_dir, content_dir, target_dir):
         None
         Create html files under target_dir
     '''
-    logger = logging.getLogger('dev')
+    #logger = logging.getLogger('dev')
+    # Gets the name of the class/method from where this method is called
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName)
+
 
     # Creating a template object which contains template html file
     template_path = os.path.join(template_dir, 'base.html')

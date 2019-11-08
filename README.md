@@ -24,20 +24,13 @@ to a html file
 ├── build.py
 ├── build.sh
 |
-├── contents (Contents matching with top.html and bottom.html)
-│   ├── blog.html
-│   ├── contact.html
-│   ├── index.html
-│   └── projects.html
-├── contents02 (Contents matching with one_template.html)
+├── content
 │   ├── blog.html
 │   ├── contact.html
 │   ├── index.html
 │   └── projects.html
 ├── templates
 │   ├── one_template.html
-│   ├── top.html
-│   └── bottom.html
 |
 ├── docs
 │   ├── index.html

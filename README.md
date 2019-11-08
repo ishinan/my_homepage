@@ -2,17 +2,12 @@
 
 ## Static Site Generator
 
-A generator(`build.py` or `build.sh`) generate static html files based on top.html, bottom.html, and a content htlm.
+A generator(`build.py` generates static html files based on base.html, and content htlm files.
 
 ### build.py
 
-This script simply combines template file(s), a content html, then write output
-to a html file. More functional than `build.sh`
-
-### build.sh
-
-This script simply combines top.html, a content html, and bottom.html and write output
-to a html file
+This script simply combines a template file and a content html, then replace title based on a content file
+, and write to a html file.
 
 ## Directory Structure
 
@@ -22,7 +17,6 @@ to a html file
 ├── README.md
 |
 ├── build.py
-├── build.sh
 |
 ├── content
 │   ├── blog.html

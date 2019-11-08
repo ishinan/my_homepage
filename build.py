@@ -55,7 +55,6 @@ blog_posts = [
 ]
 
 
-
 def read_template_html(template_file_path=""):
     '''
     Read from a template html file and return a Template object
@@ -186,14 +185,20 @@ def build_html_files(template_dir, content_dir, target_dir):
     # Creating a template object which contains template html file
     template_path = os.path.join(template_dir, 'base.html')
     logger.debug(f"template file path: {template_path}" )
-    template = read_template_html(template_path)
+    base_template = read_template_html(template_path)
 
     # Create htlm page based on template html and content html files
     for html_info in create_page_list(content_dir, target_dir):
         logger.debug(f"htlm_info: {html_info}")
-        full_content = build_full_html(template, html_info)
+        full_content = build_full_html(base_template, html_info)
         write_html_to_file(html_info['target_path'], full_content)
         logger.info(f"Created {html_info['target_path']}")
+
+    # Creating a template object which contains template html file
+    template_path = os.path.join(template_dir, 'blog_base.html')
+    logger.debug(f"template file path: {template_path}" )
+    blog_template = read_template_html(template_path)
+
 
 
 def main(template_dir, source_content_dir, target_dir):

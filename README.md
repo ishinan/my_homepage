@@ -30,7 +30,7 @@ to a html file
 │   ├── index.html
 │   └── projects.html
 ├── templates
-│   ├── one_template.html
+│   ├── base.html
 |
 ├── docs
 │   ├── index.html

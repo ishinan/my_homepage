@@ -79,5 +79,9 @@ def build_html_files(content_dir, target_dir):
                 logger.info(f"wrote the {html_name} to output file: {target_path}")
 
 
+def main(source_content_dir, target_dir):
+    build_html_files(source_content_dir, target_dir)
+
+
 if __name__ == "__main__":
-    build_html_files("content", "docs")
+    main("content", "docs")

@@ -35,6 +35,26 @@ title_data = {
     'contact':  'Contact',
 }
 
+# blog_posts
+blog_posts = [
+    {
+        "filename": "blog/1.html",
+        "date": "August 3rd, 2019",
+        "title": "Planning a summer vacation.",
+    },
+    {
+        "filename": "blog/2.html",
+        "date": "September 3rd, 2019",
+        "title": "Physical Health Check.",
+    },
+    {
+        "filename": "blog/3.html",
+        "date": "October 3rd, 2019",
+        "title": "Visiting my home town in Japan",
+    }
+]
+
+
 
 def read_template_html(template_file_path=""):
     '''

@@ -112,7 +112,7 @@ def create_page_list(content_dir, target_dir):
                   }
 
 
-def build_html_files02(template_dir, content_dir, target_dir):
+def build_html_files(template_dir, content_dir, target_dir):
     '''
     parameter:
         template_dir: dir path to read a template html file
@@ -149,65 +149,9 @@ def build_html_files02(template_dir, content_dir, target_dir):
         write_html_to_file(html_info['target_path'], full_content)
 
 
-def build_html_files(content_dir, target_dir):
-    '''
-    This function reads one template html
-    Relapace the contents and title by tempalate module
-    Add "active" css class for nav by string.replace()
-    Write the content to the target file
-    '''
-    #logger = logging.getLogger(__name__)
-    logger = logging.getLogger('dev')
-
-    # Dict key is html file name, value is string for title tag
-    title_data = {
-        'index': 'Home',
-        'blog': 'Blog',
-        'projects': 'Projects',
-        'contact':  'Contact',
-    }
-    logger.debug(f"title_data: {title_data}")
-
-    # Read from one_template.html
-    with open('templates/base.html', 'r') as f:
-        template_html  = f.read()
-    template = Template(template_html)
-
-    # Make a list of content files
-    for curr, dirs, list_content_files in os.walk(content_dir):
-        for content_file in list_content_files:
-            # Creating paths to contents html and target html
-            content_path = os.path.join(curr, content_file)
-            target_path = os.path.join(target_dir, content_file)
-            html_name = content_file.replace(".html", "")
-
-            logger.debug(f"content path: {content_path}")
-
-            # Read a content html
-            with open(content_path , 'r') as f_content:
-                content = f_content.read()
-
-            # Build the full content by template 
-            full_contents = template.safe_substitute(
-                   title = title_data[html_name],
-                   html_content = content
-                )
-
-            # Add "active" css class for nav
-            full_contents = full_contents.replace(f"\" href=\"./{html_name}", f" active\" href=\"./{html_name}")
-
-            # Write to a target file once
-            with open(target_path, 'w') as f_target:
-                f_target.writelines(full_contents)
-                logger.info(f"wrote the {html_name} to output file: {target_path}")
-
-def main02(template_dir, source_content_dir, target_dir):
-    build_html_files02(template_dir, source_content_dir, target_dir)
-
-def main(source_content_dir, target_dir):
-    build_html_files(source_content_dir, target_dir)
+def main(template_dir, source_content_dir, target_dir):
+    build_html_files(template_dir, source_content_dir, target_dir)
 
 
 if __name__ == "__main__":
-    #main("content", "docs")
-    main02("templates", "content", "docs")
+    main("templates", "content", "docs")

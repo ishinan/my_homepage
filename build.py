@@ -188,7 +188,7 @@ def build_blog_html_files(template_dir, content_dir, target_dir):
     blog_template = read_template_html(template_path)
 
 
-def build_html_files(template_dir, content_dir, target_dir):
+def build_html_files(template_dir='templates', content_dir='content', target_dir='docs'):
     '''
     Steps:
         1. Read base.html
@@ -221,15 +221,15 @@ def build_html_files(template_dir, content_dir, target_dir):
         logger.info(f"Created {html_info['target_path']}")
 
 
-def main(template_dir, source_content_dir, target_dir):
+def main():
     '''
     Invoke a function 
     '''
     # This create main html files
-    build_html_files(template_dir, source_content_dir, target_dir)
+    build_html_files()
 
     # This create blog html files
-    # invoke a function to craete blog html files
+    #build_blog_html_files(template_dir, content_dir, target_dir):
 
 if __name__ == "__main__":
-    main("templates", "content", "docs")
+    main()

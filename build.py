@@ -162,6 +162,32 @@ def build_full_html(template_content, html_info={}):
     return full_content
 
 
+def build_blog_html_files(template_dir, content_dir, target_dir):
+    '''
+    Steps:
+        1. Read templates/blog_base.html
+        2. Create a page list 
+        3. Read each content html from page list
+        4. Replace the blog_base.html contents based on the page list data 
+        5. Write the result to a html file as blog_post_1.html, 2, 3, and so on.
+    parameter:
+        template_dir: dir path to read a template html file
+        content_dir: dir path to read a conetnt html file
+        target_dir: dir path to write a final html file
+    return:
+        None
+        Create html files under target_dir
+    '''
+    # Gets the name of the function from where this function is called
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName)
+
+    # Creating a template object which contains template html file
+    template_path = os.path.join(template_dir, 'blog_base.html')
+    logger.debug(f"template file path: {template_path}" )
+    blog_template = read_template_html(template_path)
+
+
 def build_html_files(template_dir, content_dir, target_dir):
     '''
     Steps:
@@ -194,19 +220,16 @@ def build_html_files(template_dir, content_dir, target_dir):
         write_html_to_file(html_info['target_path'], full_content)
         logger.info(f"Created {html_info['target_path']}")
 
-    # Creating a template object which contains template html file
-    template_path = os.path.join(template_dir, 'blog_base.html')
-    logger.debug(f"template file path: {template_path}" )
-    blog_template = read_template_html(template_path)
-
-
 
 def main(template_dir, source_content_dir, target_dir):
     '''
     Invoke a function 
     '''
+    # This create main html files
     build_html_files(template_dir, source_content_dir, target_dir)
 
+    # This create blog html files
+    # invoke a function to craete blog html files
 
 if __name__ == "__main__":
     main("templates", "content", "docs")

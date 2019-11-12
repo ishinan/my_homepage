@@ -231,6 +231,7 @@ def build_blog_html_files(template_dir='templates', content_dir='blog', target_d
             blog_main_paragraph = c['blog_main_paragraph'],
         )
 
+        logger.debug(f"blog post dictionary: {c}")
         html_file = base_template.safe_substitute(
                 title = c['blog_title'],
                 page_content = html_blog_content

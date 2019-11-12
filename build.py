@@ -171,7 +171,7 @@ def build_full_html(template_content, html_info={}):
     content = read_html_file(html_info['content_path'])
     html_file = template_content.safe_substitute(
         title = html_info['title'],
-        html_content = content
+        page_content = content
     )
     # Add "active" css class for nav
     full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")

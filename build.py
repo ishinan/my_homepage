@@ -42,29 +42,29 @@ title_data = {
 #   <p>${blog_main_paragraph}</p>
 blog_posts = [
     {
-        "filename": "blog/1.html",
-        "date": "August 3rd, 2019",
+        "target_path": "blog/blog_post_1.html",
+        "blog_date": "August 3rd, 2019",
         "blog_title": "Planning a summer vacation.",
         "blog_summary": "Planning a summer vacation.",
         "blog_main_paragraph": "Planning a summer vacation.",
     },
     {
-        "filename": "blog/2.html",
-        "date": "September 3rd, 2019",
+        "target_path": "blog/blog_post_2.html",
+        "blog_date": "September 3rd, 2019",
         "blog_title": "Physical Health Check.",
         "blog_summary": "Physical Health Check.",
         "blog_main_paragraph": "Physical Health Check.",
     },
     {
-        "filename": "blog/3.html",
-        "date": "October 3rd, 2019",
+        "target_path": "blog/blog_post_3.html",
+        "blog_date": "October 3rd, 2019",
         "blog_title": "Visiting my home town in Japan",
         "blog_summary": "Visiting my home town in Japan",
         "blog_main_paragraph": "Visiting my home town in Japan",
     },
     {
-        "filename": "blog/4.html",
-        "date": "November 3rd, 2019",
+        "target_path": "blog/blog_post_4.html",
+        "blog_date": "November 3rd, 2019",
         "blog_title": "Looking for peace",
         "blog_summary": "Looking for peace",
         "blog_main_paragraph": "Looking for peace",
@@ -210,6 +210,35 @@ def build_blog_html_files(template_dir, content_dir, target_dir):
     blog_template = read_template_html(template_path)
 
     # Create contents by blog_template
+    #   "filename": "blog/1.html",
+    #   "blog_date": "August 3rd, 2019",
+    #   "blog_title": "Planning a summer vacation.",
+    #   "blog_summary": "Planning a summer vacation.",
+    #   "blog_main_paragraph": "Planning a summer vacation.",
+    for c in blog_posts:
+        html_blog_content = blog_template.safe_substitute(
+            title = c['blog_title'],
+            blog_date = c['blog_date'],
+            blog_summary = c['blog_summary'],
+            blog_main_paragraph = c['blog_main_paragraph'],
+        )
+
+        html_file = base_template.safe_substitute(
+                title = c['blog_title'],
+                page_content = html_blog_content
+        )
+
+        # Add "active" css class for nav
+        # This is always blog at this time
+        html_info = { 'html_name': 'blog' }
+        full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
+
+        write_html_to_file(c['target_path'], full_content)
+        logger.info(f"Created {c['target_path']}")
+
+
+
+
 
 
 def build_html_files(template_dir='templates', content_dir='content', target_dir='docs'):

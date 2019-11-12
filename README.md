@@ -12,8 +12,8 @@ This script simply combines a template file and a content html, then replace tit
 ## Directory Structure
 
 ```text
- my_homepage
- .
+my_homepage
+|
 ├── README.md
 |
 ├── build.py
@@ -25,12 +25,17 @@ This script simply combines a template file and a content html, then replace tit
 │   └── projects.html
 ├── templates
 │   ├── base.html
+│   └── blog_base.html
 |
 ├── docs
 │   ├── index.html
-│   ├── blog.html
 │   ├── projects.html
 │   ├── contact.html
+│   ├── blog.html
+│   ├── blog_post_1.html
+│   ├── blog_post_2.html
+│   ├── blog_post_3.html
+│   ├── blog_post_4.html
 │   ├── css
 │   │   ├── blog.css
 │   │   ├── contact.css

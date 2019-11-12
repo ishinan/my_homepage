@@ -35,23 +35,40 @@ title_data = {
     'contact':  'Contact',
 }
 
-# blog_posts
+# blog_posts for place holders
+#   <h1>${blog_title}</h1>
+#   <p>${blog_summary}</p>
+#   <h4>${blog_title}</h4>
+#   <p>${blog_main_paragraph}</p>
 blog_posts = [
     {
         "filename": "blog/1.html",
         "date": "August 3rd, 2019",
-        "title": "Planning a summer vacation.",
+        "blog_title": "Planning a summer vacation.",
+        "blog_summary": "Planning a summer vacation.",
+        "blog_main_paragraph": "Planning a summer vacation.",
     },
     {
         "filename": "blog/2.html",
         "date": "September 3rd, 2019",
-        "title": "Physical Health Check.",
+        "blog_title": "Physical Health Check.",
+        "blog_summary": "Physical Health Check.",
+        "blog_main_paragraph": "Physical Health Check.",
     },
     {
         "filename": "blog/3.html",
         "date": "October 3rd, 2019",
-        "title": "Visiting my home town in Japan",
-    }
+        "blog_title": "Visiting my home town in Japan",
+        "blog_summary": "Visiting my home town in Japan",
+        "blog_main_paragraph": "Visiting my home town in Japan",
+    },
+    {
+        "filename": "blog/4.html",
+        "date": "November 3rd, 2019",
+        "blog_title": "Looking for peace",
+        "blog_summary": "Looking for peace",
+        "blog_main_paragraph": "Looking for peace",
+    },
 ]
 
 
@@ -182,10 +199,17 @@ def build_blog_html_files(template_dir, content_dir, target_dir):
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
-    # Creating a template object which contains template html file
+    # Creating a base template object
+    template_path = os.path.join(template_dir, 'base.html')
+    logger.debug(f"template file path: {template_path}" )
+    base_template = read_template_html(template_path)
+
+    # Read blog_base.html
     template_path = os.path.join(template_dir, 'blog_base.html')
     logger.debug(f"template file path: {template_path}" )
     blog_template = read_template_html(template_path)
+
+    # Create contents by blog_template
 
 
 def build_html_files(template_dir='templates', content_dir='content', target_dir='docs'):

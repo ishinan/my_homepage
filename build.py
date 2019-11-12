@@ -42,28 +42,32 @@ title_data = {
 #   <p>${blog_main_paragraph}</p>
 blog_posts = [
     {
-        "target_path": "blog/blog_post_1.html",
+        "content_path": "blog/blog_post_1.html",
+        "target_path": "docs/blog_post_1.html",
         "blog_date": "August 3rd, 2019",
         "blog_title": "Planning a summer vacation.",
         "blog_summary": "Planning a summer vacation.",
         "blog_main_paragraph": "Planning a summer vacation.",
     },
     {
-        "target_path": "blog/blog_post_2.html",
+        "content_path": "blog/blog_post_2.html",
+        "target_path": "docs/blog_post_2.html",
         "blog_date": "September 3rd, 2019",
         "blog_title": "Physical Health Check.",
         "blog_summary": "Physical Health Check.",
         "blog_main_paragraph": "Physical Health Check.",
     },
     {
-        "target_path": "blog/blog_post_3.html",
+        "content_path": "blog/blog_post_3.html",
+        "target_path": "docs/blog_post_3.html",
         "blog_date": "October 3rd, 2019",
         "blog_title": "Visiting my home town in Japan",
         "blog_summary": "Visiting my home town in Japan",
         "blog_main_paragraph": "Visiting my home town in Japan",
     },
     {
-        "target_path": "blog/blog_post_4.html",
+        "content_path": "blog/blog_post_4.html",
+        "target_path": "docs/blog_post_4.html",
         "blog_date": "November 3rd, 2019",
         "blog_title": "Looking for peace",
         "blog_summary": "Looking for peace",
@@ -179,7 +183,7 @@ def build_full_html(template_content, html_info={}):
     return full_content
 
 
-def build_blog_html_files(template_dir, content_dir, target_dir):
+def build_blog_html_files(template_dir='templates', content_dir='blog', target_dir='docs'):
     '''
     Steps:
         1. Read templates/blog_base.html
@@ -217,7 +221,7 @@ def build_blog_html_files(template_dir, content_dir, target_dir):
     #   "blog_main_paragraph": "Planning a summer vacation.",
     for c in blog_posts:
         html_blog_content = blog_template.safe_substitute(
-            title = c['blog_title'],
+            blog_title = c['blog_title'],
             blog_date = c['blog_date'],
             blog_summary = c['blog_summary'],
             blog_main_paragraph = c['blog_main_paragraph'],
@@ -235,10 +239,6 @@ def build_blog_html_files(template_dir, content_dir, target_dir):
 
         write_html_to_file(c['target_path'], full_content)
         logger.info(f"Created {c['target_path']}")
-
-
-
-
 
 
 def build_html_files(template_dir='templates', content_dir='content', target_dir='docs'):
@@ -282,7 +282,8 @@ def main():
     build_html_files()
 
     # This create blog html files
-    #build_blog_html_files(template_dir, content_dir, target_dir):
+    build_blog_html_files()
+
 
 if __name__ == "__main__":
     main()

@@ -6,8 +6,9 @@ Feature:
     Read a template html file and contents html files, and create html files
 
 Regquirements
-    - 'templates/base.html" and content html files under "content" directory
-    - docs directory as destination
+    - templates directory: base html template files: 'base.html' and 'blog_base.html'
+    - content dirctory: contains html files as html content for each page
+    - docs directory: ssg will output final html files to this directory
 
 Change Log:
     - N/A
@@ -133,12 +134,15 @@ def create_page_list(content_dir, target_dir):
     This is a generator.
     Read a list of content html files under a content directory
     Return a dict of content path, target path, title, html name(without html extention)
+    
+    Example of a dictionary:
     {
         'content_path': 'content/index.html',
         'html_name': 'index',
         'target_path': 'docs/index.html',
         'title': 'Home',
     }
+
     parameters:
         content_dir:
         target_dir:
@@ -192,9 +196,9 @@ def build_blog_html_files(template_dir='templates', content_dir='blog', target_d
         4. Replace the blog_base.html contents based on the page list data 
         5. Write the result to a html file as blog_post_1.html, 2, 3, and so on.
     parameter:
-        template_dir: dir path to read a template html file
-        content_dir: dir path to read a conetnt html file
-        target_dir: dir path to write a final html file
+            template_dir: dir path to read 'base.html' template
+            content_dir: dir path to read conetnt html files(Not used, place holder for future usage)
+            target_dir: dir path to write final html files
     return:
         None
         Create html files under target_dir
@@ -203,22 +207,17 @@ def build_blog_html_files(template_dir='templates', content_dir='blog', target_d
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
-    # Creating a base template object
+    # Read base.html and create a template object
     template_path = os.path.join(template_dir, 'base.html')
     logger.debug(f"template file path: {template_path}" )
     base_template = read_template_html(template_path)
 
-    # Read blog_base.html
+    # Read blog_base.html and create a template object
     template_path = os.path.join(template_dir, 'blog_base.html')
     logger.debug(f"template file path: {template_path}" )
     blog_template = read_template_html(template_path)
 
     # Create contents by blog_template
-    #   "filename": "blog/1.html",
-    #   "blog_date": "August 3rd, 2019",
-    #   "blog_title": "Planning a summer vacation.",
-    #   "blog_summary": "Planning a summer vacation.",
-    #   "blog_main_paragraph": "Planning a summer vacation.",
     for c in blog_posts:
         html_blog_content = blog_template.safe_substitute(
             blog_title = c['blog_title'],
@@ -233,7 +232,7 @@ def build_blog_html_files(template_dir='templates', content_dir='blog', target_d
         )
 
         # Add "active" css class for nav
-        # This is always blog at this time
+        # This is always blog until the main nav include each blog page links
         html_info = { 'html_name': 'blog' }
         full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
 
@@ -250,9 +249,9 @@ def build_html_files(template_dir='templates', content_dir='content', target_dir
         4. Replace base.html contents based on the page list data 
         5. Write the result to a html file
     parameter:
-        template_dir: dir path to read a template html file
-        content_dir: dir path to read a conetnt html file
-        target_dir: dir path to write a final html file
+        template_dir: dir path to read 'base.html' template
+        content_dir: dir path to read conetnt html files
+        target_dir: dir path to write final html files
     return:
         None
         Create html files under target_dir
@@ -276,7 +275,7 @@ def build_html_files(template_dir='templates', content_dir='content', target_dir
 
 def main():
     '''
-    Invoke a function 
+    main() invokes functions
     '''
     # This create main html files
     build_html_files()

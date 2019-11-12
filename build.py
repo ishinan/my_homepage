@@ -36,11 +36,6 @@ title_data = {
     'contact':  'Contact',
 }
 
-# blog_posts for place holders
-#   <h1>${blog_title}</h1>
-#   <p>${blog_summary}</p>
-#   <h4>${blog_title}</h4>
-#   <p>${blog_main_paragraph}</p>
 blog_posts = [
     {
         "content_path": "blog/blog_post_1.html",

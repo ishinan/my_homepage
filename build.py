@@ -18,11 +18,11 @@ Future Plan:
     - Add arguements for debugging, test and feature to revert back to previous html files
 """
 import os
+import datetime
 import logging
 import logging.config
 import inspect
 from string import Template
-
 
 # Read log.cfg file for loggeing congiguration
 logging.config.fileConfig('log.cfg')
@@ -74,6 +74,17 @@ blog_posts = [
         "blog_main_paragraph": "Looking for peace",
     },
 ]
+
+
+def get_current_year():
+    '''
+    Get current year
+
+    return:
+        current_year as integer
+    '''
+    now = datetime.datetime.now()
+    return now.year
 
 
 def read_template_html(template_file_path=""):
@@ -182,6 +193,9 @@ def build_full_html(template_content, html_info={}):
     )
     # Add "active" css class for nav
     full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
+    # Add the current year to the copyright
+    copyright_year = get_current_year()
+    full_content = full_content.replace("{{copyright_year}}", str(copyright_year))
 
     return full_content
 
@@ -236,6 +250,10 @@ def build_blog_html_files(template_dir='templates', content_dir='blog', target_d
         # This is always blog until the main nav include each blog page links
         html_info = { 'html_name': 'blog' }
         full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
+
+        # Add the current year to the copyright
+        copyright_year = get_current_year()
+        full_content = full_content.replace("{{copyright_year}}", str(copyright_year))
 
         write_html_to_file(c['target_path'], full_content)
         logger.info(f"Created {c['target_path']}")

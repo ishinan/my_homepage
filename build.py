@@ -160,13 +160,13 @@ def create_page_list(content_dir, target_dir):
         a dictionary of 'content_path', 'html_name', 'target_path', 'title' 
     '''
     for curr_dir, list_dirs, list_files in os.walk(content_dir):
+        # This lambda is to parse only html extention files
         for content_file in filter(lambda fname: fname.endswith('.html'), list_files):
             content_path = os.path.join(curr_dir, content_file)
             target_path = os.path.join(target_dir, content_file)
             # html file name without html extention
-            html_name = content_file.replace(".html", "")
+            html_name, ext = os.path.splitext(content_file)
 
-            # logger.debug(f"content path: {content_path}")
             # title_data is a dictionary mapping to tile based on html file name
             yield {
                     'content_path': content_path,
@@ -200,7 +200,7 @@ def build_full_html(template_content, html_info={}):
     return full_content
 
 
-def build_blog_html_files(template_dir='templates', content_dir='blog', target_dir='docs'):
+def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='blog', target_dir='docs'):
     '''
     Steps:
         1. Read templates/blog_base.html
@@ -259,7 +259,7 @@ def build_blog_html_files(template_dir='templates', content_dir='blog', target_d
         logger.info(f"Created {c['target_path']}")
 
 
-def build_html_files(template_dir='templates', content_dir='content', target_dir='docs'):
+def build_html_files_from_base(template_dir='templates', content_dir='content', target_dir='docs'):
     '''
     Steps:
         1. Read base.html
@@ -297,10 +297,10 @@ def main():
     main() invokes functions
     '''
     # This create main html files
-    build_html_files()
+    build_html_files_from_base()
 
     # This create blog html files
-    build_blog_html_files()
+    build_blog_html_files_from_blog_base()
 
 
 if __name__ == "__main__":

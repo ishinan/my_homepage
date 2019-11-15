@@ -155,6 +155,7 @@ def create_page_list(content_dir, target_dir):
     Example of a dictionary:
     {
         'content_path': 'content/index.html',
+        'file_name': 'index.html,
         'html_name': 'index',
         'target_path': 'docs/index.html',
         'title': 'Home',
@@ -177,13 +178,14 @@ def create_page_list(content_dir, target_dir):
             # title_data is a dictionary mapping to tile based on html file name
             yield {
                     'content_path': content_path,
+                    'file_name': content_file,
                     'html_name': html_name,
                     'target_path': target_path,
-                    'title': title_data[html_name]
+                    'title': title_data[html_name],
                   }
 
 
-def build_full_html(template_content, html_info={}):
+def build_full_html(template_content, nav_list=[], html_info={}):
     '''
     Build Full conetent of html file
     Return a html content as a html string
@@ -195,6 +197,7 @@ def build_full_html(template_content, html_info={}):
     '''
     content = read_html_file(html_info['content_path'])
     html_file = template_content.render(
+        navlinks = nav_list,
         title = html_info['title'],
         page_content = content
     )
@@ -293,9 +296,11 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
 
     # Create html page based on template html and content html files
     pages = [ html_info for html_info in create_page_list(content_dir, target_dir) ]
-
+    nav_list = [ { 'filename': page['file_name'], 'title': page['title'] } for page in pages ]  
+    logger.debug(f"nav_list: {nav_list}" )
+                
     for page in pages:
-        full_content = build_full_html(base_template, page)
+        full_content = build_full_html(base_template, nav_list, page)
         write_html_to_file(page['target_path'], full_content)
         logger.info(f"Created {page['target_path']}")
 

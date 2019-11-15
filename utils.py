@@ -322,8 +322,3 @@ def main():
 
     # This create blog html files
     build_blog_html_files_from_blog_base()
-
-
-if __name__ == "__main__":
-    # Do nothing
-    pass

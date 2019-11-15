@@ -25,7 +25,7 @@ def create_new_content_file():
     '''
     create a new content file in 'content' directory
     '''
-    print('called new')
+    utils.create_new_content_file()
 
 def main_test():
     '''

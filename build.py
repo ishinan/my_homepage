@@ -21,7 +21,9 @@ import datetime
 import logging
 import logging.config
 import inspect
-from string import Template
+#from string import Template 
+from jinja2 import Template
+
 
 # Read log.cfg file for loggeing congiguration
 logging.config.fileConfig('log.cfg')
@@ -88,11 +90,11 @@ def get_current_year():
 
 def read_template_html(template_file_path=""):
     '''
-    Read from a template html file and return a Template object
+    Read from a template html file and return a Jinja Template object
     parameter:
         template_file_path: string to path to a template html file
     return:
-        A Template object 
+        A Jinja Template object 
     '''
     if template_file_path.endswith('.html'):
         with open(template_file_path, 'r') as f:
@@ -180,13 +182,13 @@ def build_full_html(template_content, html_info={}):
     Build Full conetent of html file
     Return a html content as a html string
     parameters:
-        template_content: Template object 
+        template_content: Jinja Template object 
         html_info: a dictionalry 
     return:
         a html conetent as a string
     '''
     content = read_html_file(html_info['content_path'])
-    html_file = template_content.safe_substitute(
+    html_file = template_content.render(
         title = html_info['title'],
         page_content = content
     )
@@ -231,7 +233,7 @@ def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='
 
     # Create contents by blog_template
     for c in blog_posts:
-        html_blog_content = blog_template.safe_substitute(
+        html_blog_content = blog_template.render(
             blog_title = c['blog_title'],
             blog_media_image = c['blog_media_image'],
             blog_date = c['blog_date'],
@@ -240,7 +242,7 @@ def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='
         )
 
         logger.debug(f"blog post dictionary: {c}")
-        html_file = base_template.safe_substitute(
+        html_file = base_template.render(
                 title = c['blog_title'],
                 page_content = html_blog_content
         )

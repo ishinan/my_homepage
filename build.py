@@ -21,7 +21,6 @@ import datetime
 import logging
 import logging.config
 import inspect
-#from string import Template 
 from jinja2 import Template
 
 
@@ -37,6 +36,12 @@ title_data = {
     'contact':  'Contact',
 }
 
+dict_nav_links = { } 
+
+# Create a list of dictionaries containing page info
+pages = []
+
+# Static Blog page info
 blog_posts = [
     {
         "content_path": "blog/blog_post_1.html",
@@ -75,6 +80,7 @@ blog_posts = [
         "blog_main_paragraph": "Looking for peace",
     },
 ]
+
 
 
 def get_current_year():
@@ -285,12 +291,13 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
     logger.debug(f"template file path: {template_path}" )
     base_template = read_template_html(template_path)
 
-    # Create htlm page based on template html and content html files
-    for html_info in create_page_list(content_dir, target_dir):
-        logger.debug(f"htlm_info: {html_info}")
-        full_content = build_full_html(base_template, html_info)
-        write_html_to_file(html_info['target_path'], full_content)
-        logger.info(f"Created {html_info['target_path']}")
+    # Create html page based on template html and content html files
+    pages = [ html_info for html_info in create_page_list(content_dir, target_dir) ]
+
+    for page in pages:
+        full_content = build_full_html(base_template, page)
+        write_html_to_file(page['target_path'], full_content)
+        logger.info(f"Created {page['target_path']}")
 
 
 def main():

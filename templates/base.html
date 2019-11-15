@@ -22,15 +22,15 @@
             </div>
             <div class="col">
                 <ul class="nav nav-pills" id="bottom" >
-                    {% for navlink in navlinks %}
+                    {%- for navlink in navlinks -%}
                         <li class="nav-item">
-                            {% if navlink.filename  == outputfile %}
+                            {%- if navlink.filename  == outputfile %}
                             <a class="nav-link active" href="{{ navlink.filename }}">{{ navlink.title }}</a>
-                            {% else %}
+                            {%- else %}
                             <a class="nav-link" href="{{ navlink.filename }}">{{ navlink.title }}</a>
-                            {% endif %}
+                            {%- endif %}
                         </li>
-                    {% endfor %}
+                    {% endfor -%}
                 </ul>
             </div>
        </div> 

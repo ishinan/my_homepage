@@ -334,9 +334,10 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
 
     # Set content_dict if no parameter is passed
     if len(content_dict) == 0:
-        content_dict = { 'page_title': "PlaceHolder", 
-                    'main_subject': "PlaceHolder",
-                    'main_comments': "PlaceHolder",
+        content_dict = { 'page_title': "Placeholder", 
+                    'main_subject': "Placeholder",
+                    'main_comments': "Placeholder",
+                    'body_paragraph': "Placeholder"
                     }
     logger.debug(f"content_dict: {content_dict}")
 
@@ -345,6 +346,7 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
                   page_title = content_dict['page_title'],
                   main_subject = content_dict['main_subject'],
                   main_comments = content_dict['main_comments'],
+                  body_paragraph = content_dict['body_paragraph'],
                 )
 
     target_path = os.path.join(content_dir, target_name)

@@ -31,12 +31,19 @@ logging.config.fileConfig('log.cfg')
 # To map html file name with title tag
 title_data = {
     'index': 'Home',
-    'blog': 'Blog',
     'projects': 'Projects',
+    'blog': 'Blog',
     'contact':  'Contact',
 }
 
-dict_nav_links = { } 
+# Order is importnat for nav. So we use list data type
+data_nav_title = [
+    {'index': 'Home'},
+    {'projects': 'Projects'},
+    {'blog': 'Blog'},
+    {'contact':  'Contact'},
+]
+
 
 # Create a list of dictionaries containing page info
 pages = []
@@ -198,6 +205,7 @@ def build_full_html(template_content, nav_list=[], html_info={}):
     content = read_html_file(html_info['content_path'])
     html_file = template_content.render(
         navlinks = nav_list,
+        outputfile = html_info['file_name'],
         title = html_info['title'],
         page_content = content
     )

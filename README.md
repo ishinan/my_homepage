@@ -2,12 +2,19 @@
 
 ## Static Site Generator
 
-A generator(`build.py` generates static html files based on base.html, and content htlm files.
+A generator(`manage.py` and `utils.py`) generates static html files based on base.html, and content htlm files.
 
-### build.py
+### manage.py
 
-This script simply combines a template file and a content html, then replace title based on a content file
-, and write to a html file.
+This script simply controles what to do. Currently there are two options:
+```text
+manage.py build: Build static html files
+manage.py new  : Create a new content html file
+```
+
+### utils.py
+
+This is the main engine of this static site generator utility. 
 
 ## Directory Structure
 
@@ -16,16 +23,19 @@ my_homepage
 |
 ├── README.md
 |
-├── build.py
+├── manage.py
+├── utils.py
 |
 ├── content
 │   ├── blog.html
 │   ├── contact.html
 │   ├── index.html
 │   └── projects.html
+|
 ├── templates
 │   ├── base.html
-│   └── blog_base.html
+│   ├── blog_base.html
+│   └── new_content_base.html
 |
 ├── docs
 │   ├── index.html

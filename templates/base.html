@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="css/blog.css">
     <link rel="stylesheet" href="css/projects.css">
     <link rel="stylesheet" href="css/contact.css">
-    <title>Masa's ${title} Page</title>
+    <title>Masa's {{ title }} Page</title>
 </head>
 <body>
     <div class="container"> 
@@ -22,23 +22,20 @@
             </div>
             <div class="col">
                 <ul class="nav nav-pills" id="bottom" >
-                    <li class="nav-item ">
-                        <a class="nav-link" href="./index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./blog.html">Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./projects.html">Projects</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="./contact.html">Contact</a>
-                    </li>
+                    {%- for navlink in navlinks -%}
+                        <li class="nav-item">
+                            {%- if navlink.filename  == outputfile %}
+                            <a class="nav-link active" href="{{ navlink.filename }}">{{ navlink.title }}</a>
+                            {%- else %}
+                            <a class="nav-link" href="{{ navlink.filename }}">{{ navlink.title }}</a>
+                            {%- endif %}
+                        </li>
+                    {% endfor -%}
                 </ul>
             </div>
        </div> 
        <!-- Template: top: end -->
-${page_content}
+{{ page_content }}
         <!-- Template: bottom: start --> 
         <!-- Footer -->
         <div class="row">

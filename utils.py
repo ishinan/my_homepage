@@ -34,6 +34,7 @@ data_title = {
     'projects': 'Projects',
     'blog': 'Blog',
     'contact':  'Contact',
+    'new_content':  'New Content',
 }
 
 # Order is importnat for nav. So we use list data type
@@ -312,6 +313,48 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
         logger.info(f"Created {page['target_path']}")
 
 
+def create_new_content_file(content_base_template='templates/new_content_base.html', 
+                            content_dict={}, content_dir='content', target_name='new_content.html'):
+    '''
+    Create a new content file
+    parameters:
+        content_base_template: default "templates/new_content_base.html"
+        content_dict: { 'page_title': "value", 
+                        'main_subject': "value",
+                        'main_comments': "value",
+                       }
+        content_dir: default "content"
+        target_name: 
+    return:
+        None
+    '''
+    # Gets the name of the function from where this function is called
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName) 
+
+    # Set content_dict if no parameter is passed
+    if len(content_dict) == 0:
+        content_dict = { 'page_title': "PlaceHolder", 
+                    'main_subject': "PlaceHolder",
+                    'main_comments': "PlaceHolder",
+                    }
+    logger.debug(f"content_dict: {content_dict}")
+
+    new_content_template = read_template_html(content_base_template)
+    new_content = new_content_template.render(
+                  page_title = content_dict['page_title'],
+                  main_subject = content_dict['main_subject'],
+                  main_comments = content_dict['main_comments'],
+                )
+
+    target_path = os.path.join(content_dir, target_name)
+    # if os.path.isfile(target_path):
+    #     target_path = target_path + datetime.datetime.now()       
+    write_html_to_file(target_path, new_content)
+    logger.info(f"Created a new content file: {target_path}")
+
+
+
 def main():
     '''
     main() invokes functions
@@ -321,7 +364,3 @@ def main():
 
     # This create blog html files
     build_blog_html_files_from_blog_base()
-
-
-if __name__ == "__main__":
-    main()

@@ -29,7 +29,7 @@ logging.config.fileConfig('log.cfg')
 
 
 # To map html file name with title tag
-title_data = {
+data_title = {
     'index': 'Home',
     'projects': 'Projects',
     'blog': 'Blog',
@@ -37,11 +37,11 @@ title_data = {
 }
 
 # Order is importnat for nav. So we use list data type
-data_nav_title = [
-    {'index': 'Home'},
-    {'projects': 'Projects'},
-    {'blog': 'Blog'},
-    {'contact':  'Contact'},
+data_nav_list = [
+    {'filename': 'index.html', 'title': 'Home'},
+    {'filename': 'projects.html', 'title': 'Projects'},
+    {'filename': 'blog.html', 'title': 'Blog'},
+    {'filename': 'contact.html', 'title': 'Contact'},
 ]
 
 
@@ -182,13 +182,13 @@ def create_page_list(content_dir, target_dir):
             # html file name without html extention
             html_name, ext = os.path.splitext(content_file)
 
-            # title_data is a dictionary mapping to tile based on html file name
+            # data_title is a dictionary mapping to tile based on html file name
             yield {
                     'content_path': content_path,
                     'file_name': content_file,
                     'html_name': html_name,
                     'target_path': target_path,
-                    'title': title_data[html_name],
+                    'title': data_title[html_name],
                   }
 
 
@@ -198,6 +198,7 @@ def build_full_html(template_content, nav_list=[], html_info={}):
     Return a html content as a html string
     parameters:
         template_content: Jinja Template object 
+        nav_list: a list of dictionaries of "filename" and "title" for each page
         html_info: a dictionalry 
     return:
         a html conetent as a string
@@ -304,11 +305,9 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
 
     # Create html page based on template html and content html files
     pages = [ html_info for html_info in create_page_list(content_dir, target_dir) ]
-    nav_list = [ { 'filename': page['file_name'], 'title': page['title'] } for page in pages ]  
-    logger.debug(f"nav_list: {nav_list}" )
                 
     for page in pages:
-        full_content = build_full_html(base_template, nav_list, page)
+        full_content = build_full_html(base_template, data_nav_list, page)
         write_html_to_file(page['target_path'], full_content)
         logger.info(f"Created {page['target_path']}")
 

@@ -132,6 +132,10 @@ def read_html_md_file(file_path):
                   },
                 ]
     '''
+    # logger: Gets the name of the function from where this function is called
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName)
+
     if file_path.endswith('.html'):
         # Read a content html
         with open(file_path , 'r') as f_content:
@@ -144,12 +148,12 @@ def read_html_md_file(file_path):
             md = markdown.Markdown(extensions=['meta'])
             html_of_md_file = md.convert(content_of_md_file)
             dict_of_md_meta_data = md.Meta
-
             return [ html_of_md_file, 
                      dict_of_md_meta_data,
                    ]
 
-    return "Could not find a content html file" + file_path
+    # Using the same format for return 
+    return [ "Could not find a content file(.html or .md)" + file_path, {}, ]
 
 
 def write_html_to_file(file_path, html_content):
@@ -161,11 +165,14 @@ def write_html_to_file(file_path, html_content):
     return: 
         None
     '''
+    # logger: Gets the name of the function from where this function is called
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName)
+
     if file_path.endswith('.html'):
         # Write to a target file once
         with open(file_path, 'w') as f_target:
             f_target.writelines(html_content)
-            #logger.info(f"wrote the {html_name} to output file: {target_path}")
             return
 
     return "Could not find a content html file" + file_path
@@ -230,16 +237,20 @@ def build_full_html(template_content, nav_list=[], html_info={}):
     logger = logging.getLogger(loggerName)
 
     meta_data = {}
-    content, *meta_data = read_html_md_file(html_info['content_path'])
+    content, meta_data = read_html_md_file(html_info['content_path'])
     logger.debug(f"meta_data: {meta_data}" )
+    logger.debug(f"content: {content}" )
+    # page_title from either md's meta or html_info['title']
+    page_title = meta_data['title'][0] if meta_data['title'] else html_info['title']  
     html_file = template_content.render(
-        navlinks = nav_list,
-        outputfile = html_info['file_name'],
-        title = html_info['title'],
-        page_content = content
-    )
+                    navlinks = nav_list,
+                    outputfile = html_info['file_name'],
+                    title = page_title,
+                    page_content = content,
+                )
     # Add "active" css class for nav
-    full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
+    #full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
+    full_content = html_file
     # Add the current year to the copyright
     copyright_year = get_current_year()
     full_content = full_content.replace("{{copyright_year}}", str(copyright_year))

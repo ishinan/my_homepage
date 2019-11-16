@@ -1,3 +1,5 @@
+title: A New Content Page Placeholder
+
     <!-- Content: index.html -->
        <!-- Jumbotron -->
        <div class="jumbotron">

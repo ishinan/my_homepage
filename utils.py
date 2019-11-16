@@ -221,12 +221,17 @@ def build_full_html(template_content, nav_list=[], html_info={}):
     parameters:
         template_content: Jinja Template object 
         nav_list: a list of dictionaries of "filename" and "title" for each page
-        html_info: a dictionalry 
+        html_info: a dictionary about a page
     return:
         a html conetent as a string
     '''
+    # logger: Gets the name of the function from where this function is called
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName)
+
     meta_data = {}
     content, *meta_data = read_html_md_file(html_info['content_path'])
+    logger.debug(f"meta_data: {meta_data}" )
     html_file = template_content.render(
         navlinks = nav_list,
         outputfile = html_info['file_name'],

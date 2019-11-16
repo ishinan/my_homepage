@@ -22,6 +22,7 @@ import logging
 import logging.config
 import inspect
 from jinja2 import Template
+import markdown
 
 
 # Read log.cfg file for loggeing congiguration
@@ -118,19 +119,35 @@ def read_template_html(template_file_path=""):
     return Template("Could not find a template html file")
 
 
-def read_html_file(file_path):
+def read_html_md_file(file_path):
     '''
     Read a html exntention file and return its content as string
+    Read a md exntention file and return its content and meta key values
     parameter: 
         file_path
     return: 
-        content string
+        content [ 'html string', 
+                  { 'key': [ 'value', ], 
+                    'key': [ 'value' ],
+                  },
+                ]
     '''
     if file_path.endswith('.html'):
         # Read a content html
         with open(file_path , 'r') as f_content:
-            content = f_content.read()
-            return content
+            content_of_html_file = f_content.read()
+            return [ content_of_html_file ]
+    elif file_path.endswith('.md'):
+        # Read a content md
+        with open(file_path , 'r') as f_content:
+            content_of_md_file = f_content.read()
+            md = markdown.Markdown(extensions=['meta'])
+            html_of_md_file = md.convert(content_of_md_file)
+            dict_of_md_meta_data = md.Meta
+
+            return [ html_of_md_file, 
+                     dict_of_md_meta_data,
+                   ]
 
     return "Could not find a content html file" + file_path
 
@@ -154,7 +171,7 @@ def write_html_to_file(file_path, html_content):
     return "Could not find a content html file" + file_path
 
 
-def create_page_list(content_dir, target_dir):
+def create_page_list(content_dir='content', content_type='html', target_dir='docs'):
     '''
     This is a generator.
     Read a list of content html files under a content directory
@@ -177,9 +194,13 @@ def create_page_list(content_dir, target_dir):
     '''
     for curr_dir, list_dirs, list_files in os.walk(content_dir):
         # This lambda is to parse only html extention files
-        for content_file in filter(lambda fname: fname.endswith('.html'), list_files):
+        for content_file in filter(lambda fname: fname.endswith(content_type), list_files):
+            # This could be either, .html or .md file path
             content_path = os.path.join(curr_dir, content_file)
-            target_path = os.path.join(target_dir, content_file)
+            # target_path is an html file path
+            content_file_without_extension = os.path.splitext(content_file)[0]
+            target_file_name = content_file_without_extension + ".html"
+            target_path = os.path.join(target_dir, target_file_name)
             # html file name without html extention
             html_name, ext = os.path.splitext(content_file)
 
@@ -204,7 +225,8 @@ def build_full_html(template_content, nav_list=[], html_info={}):
     return:
         a html conetent as a string
     '''
-    content = read_html_file(html_info['content_path'])
+    meta_data = {}
+    content, *meta_data = read_html_md_file(html_info['content_path'])
     html_file = template_content.render(
         navlinks = nav_list,
         outputfile = html_info['file_name'],
@@ -279,7 +301,7 @@ def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='
         logger.info(f"Created {c['target_path']}")
 
 
-def build_html_files_from_base(template_dir='templates', content_dir='content', target_dir='docs'):
+def build_html_files_from_base(template_dir='templates', content_dir='content', content_type='html', target_dir='docs'):
     '''
     Steps:
         1. Read base.html
@@ -290,12 +312,13 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
     parameter:
         template_dir: dir path to read 'base.html' template
         content_dir: dir path to read conetnt html files
+        content_type: 'html' or 'md'
         target_dir: dir path to write final html files
     return:
         None
         Create html files under target_dir
     '''
-    # Gets the name of the function from where this function is called
+    # logger: Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
@@ -305,9 +328,12 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
     base_template = read_template_html(template_path)
 
     # Create html page based on template html and content html files
-    pages = [ html_info for html_info in create_page_list(content_dir, target_dir) ]
+    content_type = 'md'
+    pages = [ html_info for html_info in create_page_list(content_dir, content_type, target_dir) ]
                 
+    # Combine template, content, meta data
     for page in pages:
+        logger.debug(f"page: {page}")
         full_content = build_full_html(base_template, data_nav_list, page)
         write_html_to_file(page['target_path'], full_content)
         logger.info(f"Created {page['target_path']}")

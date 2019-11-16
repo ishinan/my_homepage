@@ -1,3 +1,5 @@
+title: Home
+
     <!-- Content: index.html -->
        <!-- Jumbotron -->
        <div class="jumbotron">

@@ -1,42 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> 
-    <link rel="stylesheet" href="css/shared.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/blog.css">
-    <link rel="stylesheet" href="css/projects.css">
-    <link rel="stylesheet" href="css/contact.css">
-    <title>Masa's Blog Page</title>
-</head>
-<body>
-    <div class="container"> 
-        <!-- Header/Nav -->
-        <div class="row header">
-            <div class="col">
-                <img src="images/logo_masayana_small_60.png" alt="Logo_MasaYana">
-            </div>
-            <div class="col">
-                <ul class="nav nav-pills" id="bottom" ><li class="nav-item">
-                            <a class="nav-link" href="index.html">Home</a>
-                        </li>
-                    <li class="nav-item">
-                            <a class="nav-link" href="projects.html">Projects</a>
-                        </li>
-                    <li class="nav-item">
-                            <a class="nav-link active" href="blog.html">Blog</a>
-                        </li>
-                    <li class="nav-item">
-                            <a class="nav-link" href="contact.html">Contact</a>
-                        </li>
-                    </ul>
-            </div>
-       </div> 
-       <!-- Template: top: end -->
+title: Blog
+
+
 <div class="jumbotron">
     <h1>Masa's Blog</h1>
     <div id="myCarousel" class="carousel slide bg-inverse w-50 ml-auto mr-auto" data-ride="carousel">
@@ -76,6 +40,7 @@
                   </div>
               </div>
 
+              
             </div>
             <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
               <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -121,9 +86,8 @@
           <p class="card-text">A great Torii gate of Meiji Shrine in Tokyo...</p>
         </div>
       </div>
-  </div>
-
-<p><div class="row main">
+  </div> 
+  <div class="row main">
       <div class="col-3 card">
         <img class="card-img-top" src="./images/shrine_komainu.jpg" alt="Photo of sunset">
         <div class="card-body">
@@ -139,18 +103,4 @@
     <div class="col-3 card">
         <img src="./images/curry.jpg" alt="Torii" class="img-fluid img-thumbnail"  >
     </div>
-</div> </p>
-        <!-- Template: bottom: start --> 
-        <!-- Footer -->
-        <div class="row">
-            <div class="col footer">
-                <div>&copy; Masaaki Yana. All rights reserved.</div>
-                <div><a href="#">Privacy Policy</a></div>
-            </div> 
-        </div> 
-    </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-</body>
-</html>
+</div> 

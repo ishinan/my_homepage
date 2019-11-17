@@ -184,40 +184,40 @@ def create_page_list(content_dir='content', content_type='html', target_dir='doc
     Read a list of content html files under a content directory
     Return a dict of content path, target path, title, html name(without html extention)
     
-    Example of a dictionary:
+    An example of a dictionary:
     {
-        'content_path': 'content/index.html',
-        'file_name': 'index.html,
-        'html_name': 'index',
+        'content_path': 'content/index.md',
+        'file_name': 'index,
+        'html_name': 'index.html',
         'target_path': 'docs/index.html',
         'title': 'Home',
     }
 
     parameters:
-        content_dir:
-        target_dir:
+        content_dir: default: 'content'
+        content_type: file exntension: .md or .html
+        target_dir: default: 'docs'
     return:
-        a dictionary of 'content_path', 'html_name', 'target_path', 'title' 
+        a dictionary of 'content_path', 'file_name', 'html_name', 'target_path', 'title' 
     '''
     for curr_dir, list_dirs, list_files in os.walk(content_dir):
-        # This lambda is to parse only html extention files
+        # This lambda is to parse only '.html' or '.md' extention files
         for content_file in filter(lambda fname: fname.endswith(content_type), list_files):
             # This could be either, .html or .md file path
             content_path = os.path.join(curr_dir, content_file)
+            # content file name and extension
+            content_file_name, ext = os.path.splitext(content_file)
             # target_path is an html file path
-            content_file_without_extension = os.path.splitext(content_file)[0]
-            target_file_name = content_file_without_extension + ".html"
+            target_file_name = content_file_name + ".html"
             target_path = os.path.join(target_dir, target_file_name)
-            # html file name without html extention
-            html_name, ext = os.path.splitext(content_file)
 
             # data_title is a dictionary mapping to tile based on html file name
             yield {
                     'content_path': content_path,
-                    'file_name': content_file,
-                    'html_name': html_name,
+                    'file_name': content_file_name,
+                    'html_name': target_file_name,
                     'target_path': target_path,
-                    'title': data_title[html_name],
+                    'title': data_title[content_file_name],
                   }
 
 
@@ -239,12 +239,11 @@ def build_full_html(template_content, nav_list=[], html_info={}):
     meta_data = {}
     content, meta_data = read_html_md_file(html_info['content_path'])
     logger.debug(f"meta_data: {meta_data}" )
-    logger.debug(f"content: {content}" )
     # page_title from either md's meta or html_info['title']
     page_title = meta_data['title'][0] if meta_data['title'] else html_info['title']  
     html_file = template_content.render(
                     navlinks = nav_list,
-                    outputfile = html_info['file_name'],
+                    outputfile = html_info['html_name'],
                     title = page_title,
                     page_content = content,
                 )
@@ -344,8 +343,7 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
     base_template = read_template_html(template_path)
 
     # Create html page based on template html and content html files
-    content_type = 'md'
-    pages = [ html_info for html_info in create_page_list(content_dir, content_type, target_dir) ]
+    pages = [ page for page in create_page_list(content_dir=content_dir, content_type='md', target_dir=target_dir) ]
                 
     # Combine template, content, meta data
     for page in pages:

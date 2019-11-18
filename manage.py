@@ -19,6 +19,14 @@ def build_static_site():
     # This create main html files
     utils.build_html_files()
 
+
+def build_new_blog_post():
+    '''
+    build a new blog post md file under blog dirctory by asking user inputs, 
+    and populate a blog_post_{number}.html file under docs directory
+    '''
+    utils.build_new_blog_post()
+
 def build_blog_pages_hw3():
     '''
     build each blog pages (homework03)
@@ -56,6 +64,7 @@ def main():
         'new': create_new_content_file,
         'build': build_static_site,
         'bpages':build_blog_pages_hw3,
+        'new-blog-post':build_new_blog_post,
     }
     # Removing python command if this utility is called with a python command
     python_cmd_list = [ 'python', 'python2', 'python3', 'py2', 'py3' ]

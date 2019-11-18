@@ -406,6 +406,13 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
     write_html_to_file(target_path, new_content)
     logger.info(f"Created a new content file: {target_path}")
 
+def build_new_blog_post():
+    '''
+    build a new blog post md file under blog dirctory by asking user inputs, 
+    and populate a blog_post_{number}.html file under docs directory
+    '''
+    print("build_new_blog_post() was invoked")
+
 def main():
     '''
     main() invokes functions

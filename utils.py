@@ -93,6 +93,20 @@ blog_posts = [
     },
 ]
 
+def get_current_datetime():
+    '''
+    Get year, month, day, hour, min 
+
+    return:
+        current_year as integer
+    '''
+    now = datetime.datetime.now()
+    return [ 'year': now.year, 
+             'month': now.month,
+             'day': now.day,
+             'hour': now.hour,
+             'minute': now.minute
+            ]
 
 def get_current_year():
     '''
@@ -101,8 +115,8 @@ def get_current_year():
     return:
         current_year as integer
     '''
-    now = datetime.datetime.now()
-    return now.year
+    d = get_current_datetime()
+    return d['year']
 
 def ask_contents():
     '''

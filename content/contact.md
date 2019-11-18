@@ -1,5 +1,5 @@
 title: Contact
-
+nav_link_order: 4
 
 <div class="jumbotron">
     <h1>Send Me A Message!</h1>

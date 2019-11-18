@@ -1,4 +1,5 @@
 title: Projects
+nav_link_order: 2
 
 
 <div class="jumbotron jumbotron-project">

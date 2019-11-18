@@ -1,5 +1,5 @@
 title: Home
-
+nav_link_order: 1
 
 <div class="jumbotron">
         <div class="row">

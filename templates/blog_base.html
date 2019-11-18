@@ -51,48 +51,17 @@
           </div>
     </div>
 
+{% for blog_section in blog_sections %}
 <div class="row main">
   <div class="media">
-    <img class="mr-3 media_image" src="./images/skye_from_jacklondon.jpg" alt="Sample photo">
+    <img class="mr-3 media_image" src="{{ blog_section.image }}" alt="{{ blog_section.image_alt }}">
     <div class="media-body">
-        <h4>Planning a summer vacation</h4>
-        <h5>August 3rd, 2019</h5>
-        <p>Planning a summer vacation.</p>
+        <h4>{{ blog_section.subject }}</h4>
+        <h5>{{ blog_section.created_date }}</h5>
+        <p>{{ blog_section.short_summary }}</p>
     </div>
   </div>
 </div>
   <hr/>
-<div class="row main">
-  <div class="media">
-    <img class="mr-3 media_image" src="./images/the_light_at_the_end_of_the_tunnel.jpg" alt="Sample photo">
-    <div class="media-body">
-        <h4>The light at the end of the tunnel</h4>
-        <h5>September 3rd, 2019</h5>
-        <p>The light at the end of the tunnel</p>
-    </div>
-  </div>
-</div>
-  <hr/>
-<div class="row main">
-  <div class="media">
-    <img class="mr-3 media_image" src="./images/sky_red.jpg" alt="Sample photo">
-    <div class="media-body">
-      <h4>Visiting my home town in Japan</h4>
-      <h5>October 3rd, 2019</h5>
-      <p>Visiting my home town in Japan</p>
-    </div>
-  </div>
-</div>
-  <hr/>
-<div class="row main">
-  <div class="media">
-    <img class="mr-3 media_image" src="./images/maiji_shrine_trii_gate.jpg" alt="Sample photo">
-    <div class="media-body">
-      <h4>Looking for peace</h4>
-      <h5>November 3rd, 2019</h5>
-      <p>Looking for peace</p>
-    </div>
-  </div>
-</div>
-  <hr/>
+{% endfor %}
 {% endblock %}

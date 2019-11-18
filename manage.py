@@ -17,9 +17,14 @@ def build_static_site():
     build static site from the current content
     '''
     # This create main html files
-    utils.build_html_files_from_base()
+    utils.build_html_files()
+
+def build_blog_pages_hw3():
+    '''
+    build each blog pages (homework03)
+    '''
     # This create blog html files
-    #utils.build_blog_html_files_from_blog_base()
+    utils.build_blog_html_files_from_blog_base()
 
 def ask_contents():
     '''
@@ -43,12 +48,6 @@ def create_new_content_file():
     content_dict_user_input = ask_contents()
     utils.create_new_content_file(content_dict=content_dict_user_input)
 
-def build_blog_page():
-    '''
-    Testing to build a blog page 
-    '''
-    utils.build_blog_html_files_from_blog_base02()
-
 def main():
     '''
     Run utils with argements(new or build). 
@@ -56,7 +55,7 @@ def main():
     func_list = {
         'new': create_new_content_file,
         'build': build_static_site,
-        'bblog': build_blog_page,
+        'bpages':build_blog_pages_hw3,
     }
     # Removing python command if this utility is called with a python command
     python_cmd_list = [ 'python', 'python2', 'python3', 'py2', 'py3' ]
@@ -67,17 +66,9 @@ def main():
     if len(sys.argv) == 2 and sys.argv[1] in func_list.keys():
            func_list[sys.argv[1]]()
     else:
-        print("Must have one argument [new|build]")
+        options = '|'.join([ x for x in func_list.keys() ])
+        print(f"Must have one argument [{options}]")
         usage()
-
-def main_old():
-    '''
-    Run utils with argements(new or build). 
-    '''
-    # This create main html files
-    utils.build_html_files_from_base()
-    # This create blog html files
-    utils.build_blog_html_files_from_blog_base()
 
 
 if __name__ == '__main__':

@@ -21,9 +21,8 @@ import datetime
 import logging
 import logging.config
 import inspect
-from jinja2 import Template
+from jinja2 import Environment, FileSystemLoader
 import markdown
-
 
 # Read log.cfg file for loggeing congiguration
 logging.config.fileConfig('log.cfg')
@@ -91,7 +90,6 @@ blog_posts = [
 ]
 
 
-
 def get_current_year():
     '''
     Get current year
@@ -111,12 +109,10 @@ def read_template_html(template_file_path=""):
     return:
         A Jinja Template object 
     '''
-    if template_file_path.endswith('.html'):
-        with open(template_file_path, 'r') as f:
-            template_html  = f.read()
-            return Template(template_html)
-
-    return Template("Could not find a template html file")
+    # Setting Jinja2 loader path. Required for {% extends %}
+    jinja_env = Environment(loader=FileSystemLoader(os.path.dirname(template_file_path)), 
+                      keep_trailing_newline=True)
+    return  jinja_env.get_template(os.path.basename(template_file_path))
 
 
 def read_html_md_file(file_path):
@@ -178,7 +174,7 @@ def write_html_to_file(file_path, html_content):
     return "Could not find a content html file" + file_path
 
 
-def create_page_list(content_dir='content', content_type='html', target_dir='docs'):
+def create_page_list(content_dir='content', content_type='md', target_dir='docs'):
     '''
     This is a generator.
     Read a list of content html files under a content directory
@@ -195,7 +191,7 @@ def create_page_list(content_dir='content', content_type='html', target_dir='doc
 
     parameters:
         content_dir: default: 'content'
-        content_type: file exntension: .md or .html
+        content_type: file exntension: .md or .html (default: md)
         target_dir: default: 'docs'
     return:
         a dictionary of 'content_path', 'file_name', 'html_name', 'target_path', 'title' 
@@ -241,21 +237,16 @@ def build_full_html(template_content, nav_list=[], html_info={}):
     logger.debug(f"meta_data: {meta_data}" )
     # page_title from either md's meta or html_info['title']
     page_title = meta_data['title'][0] if meta_data['title'] else html_info['title']  
-    html_file = template_content.render(
+    # Add the current year to the copyright
+    copyright_year = get_current_year()
+    full_content = template_content.render(
                     navlinks = nav_list,
                     outputfile = html_info['html_name'],
                     title = page_title,
                     page_content = content,
-                )
-    # Add "active" css class for nav
-    #full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
-    full_content = html_file
-    # Add the current year to the copyright
-    copyright_year = get_current_year()
-    full_content = full_content.replace("{{copyright_year}}", str(copyright_year))
-
+                    copyright_year = copyright_year, 
+                    )
     return full_content
-
 
 def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='blog', target_dir='docs'):
     '''
@@ -316,13 +307,13 @@ def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='
         logger.info(f"Created {c['target_path']}")
 
 
-def build_html_files_from_base(template_dir='templates', content_dir='content', content_type='html', target_dir='docs'):
+def build_html_files(template_dir='templates', content_dir='content', content_type='md', target_dir='docs'):
     '''
     Steps:
-        1. Read base.html
+        1. Read jinja template files( base.html and blog_base.html )
         2. Create a page list 
         3. Read each content html from page list
-        4. Replace base.html contents based on the page list data 
+        4. Render a jinja template based on the page data
         5. Write the result to a html file
     parameter:
         template_dir: dir path to read 'base.html' template
@@ -337,10 +328,15 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
-    # Creating a template object which contains template html file
+    # Create a template object from base.html
     template_path = os.path.join(template_dir, 'base.html')
     logger.debug(f"template file path: {template_path}" )
     base_template = read_template_html(template_path)
+
+    # Create a template object from blog_base.html
+    template_path = os.path.join(template_dir, 'blog_base.html')
+    logger.debug(f"template file path: {template_path}" )
+    blog_template = read_template_html(template_path)
 
     # Create html page based on template html and content html files
     pages = [ page for page in create_page_list(content_dir=content_dir, content_type='md', target_dir=target_dir) ]
@@ -348,10 +344,12 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
     # Combine template, content, meta data
     for page in pages:
         logger.debug(f"page: {page}")
-        full_content = build_full_html(base_template, data_nav_list, page)
+        if page['file_name'] == 'blog':
+            full_content = build_full_html(blog_template, data_nav_list, page)
+        else:
+            full_content = build_full_html(base_template, data_nav_list, page)
         write_html_to_file(page['target_path'], full_content)
         logger.info(f"Created {page['target_path']}")
-
 
 def create_new_content_file(content_base_template='templates/new_content_base.html', 
                             content_dict={}, content_dir='content', target_name='new_content.html'):
@@ -395,14 +393,12 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
     write_html_to_file(target_path, new_content)
     logger.info(f"Created a new content file: {target_path}")
 
-
-
 def main():
     '''
     main() invokes functions
     '''
     # This create main html files
-    build_html_files_from_base()
+    build_html_files()
 
     # This create blog html files
     build_blog_html_files_from_blog_base()

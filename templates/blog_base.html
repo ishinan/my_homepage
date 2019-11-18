@@ -54,11 +54,11 @@
 {% for blog_section in blog_sections %}
 <div class="row main">
   <div class="media">
-    <img class="mr-3 media_image" src="{{ blog_section.image }}" alt="{{ blog_section.image_alt }}">
+    <img class="mr-3 media_image" src="{{ blog_section.image[0] }}" alt="{{ blog_section.image_alt[0] }}">
     <div class="media-body">
-        <h4>{{ blog_section.subject }}</h4>
-        <h5>{{ blog_section.created_date }}</h5>
-        <p>{{ blog_section.short_summary }}</p>
+        <h4>{{ blog_section.subject[0] }}</h4>
+        <h5>{{ blog_section.created_date[0] }}</h5>
+        <p>{{ blog_section.short_summary[0] }}</p>
     </div>
   </div>
 </div>

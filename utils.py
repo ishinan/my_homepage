@@ -104,6 +104,21 @@ def get_current_year():
     now = datetime.datetime.now()
     return now.year
 
+def ask_contents():
+    '''
+    Ask user input for 
+        'page_title', 'main_subject', 'main_comments', 'body_paragraph',
+    '''
+    item_list = [ 'page_title', 'main_subject', 'main_comments', 'body_paragraph' ]
+    user_input_data = {}
+    print("Need inputs for some contents")
+    for item in item_list:
+        user_input_data[item] = input(f"-> {item}: ")
+        if len(user_input_data[item]) == 0:
+            user_input_data[item] = "PlaceHolder: " + item
+
+    return user_input_data 
+
 
 def read_template_html(template_file_path=""):
     '''
@@ -176,6 +191,17 @@ def write_html_to_file(file_path, html_content):
             return
 
     return "Could not find a content html file" + file_path
+
+def write_blog_md_file(file_path, blog_meta_and_cotent={}):
+    '''
+    Write a new blog content and metadata to a md file
+    parameters:
+        file_path
+        blog_meta_and_content 
+    return:
+        None
+    '''
+    pass
 
 
 def create_page_list(content_dir='content', content_type='md', target_dir='docs'):
@@ -408,10 +434,18 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
 
 def build_new_blog_post():
     '''
-    build a new blog post md file under blog dirctory by asking user inputs, 
-    and populate a blog_post_{number}.html file under docs directory
+    build a new blog post md file under blog dirctory by asking user inputs
+
+    return 
+        blog_file_path e.g. 'blog/5.md'
     '''
-    print("build_new_blog_post() was invoked")
+    # Gets the name of the function from where this function is called
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName) 
+
+    # 1. Read a user input
+    # 2. Write the result to "blog" directory
+
 
 def main():
     '''

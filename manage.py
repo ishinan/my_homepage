@@ -34,26 +34,11 @@ def build_blog_pages_hw3():
     # This create blog html files
     utils.build_blog_html_files_from_blog_base()
 
-def ask_contents():
-    '''
-    Ask user input for 
-        'page_title', 'main_subject', 'main_comments', 'body_paragraph',
-    '''
-    item_list = [ 'page_title', 'main_subject', 'main_comments', 'body_paragraph' ]
-    user_input_data = {}
-    print("Need inputs for some contents")
-    for item in item_list:
-        user_input_data[item] = input(f"-> {item}: ")
-        if len(user_input_data[item]) == 0:
-            user_input_data[item] = "PlaceHolder: " + item
-
-    return user_input_data 
-
 def create_new_content_file():
     '''
     create a new content file in 'content' directory
     '''
-    content_dict_user_input = ask_contents()
+    content_dict_user_input = utils.ask_contents()
     utils.create_new_content_file(content_dict=content_dict_user_input)
 
 def main():

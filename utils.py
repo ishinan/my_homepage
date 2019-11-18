@@ -95,18 +95,17 @@ blog_posts = [
 
 def get_current_datetime():
     '''
-    Get year, month, day, hour, min 
-
+    Get year, month, day, hour, min from datetime module
     return:
-        current_year as integer
+        datetime dictionary { year, month, day, hour, minute }
     '''
     now = datetime.datetime.now()
-    return [ 'year': now.year, 
+    return { 'year': now.year, 
              'month': now.month,
              'day': now.day,
              'hour': now.hour,
              'minute': now.minute
-            ]
+            }
 
 def get_current_year():
     '''
@@ -133,7 +132,6 @@ def ask_contents():
 
     return user_input_data 
 
-
 def read_template_html(template_file_path=""):
     '''
     Read from a template html file and return a Jinja Template object
@@ -146,7 +144,6 @@ def read_template_html(template_file_path=""):
     jinja_env = Environment(loader=FileSystemLoader(os.path.dirname(template_file_path)), 
                       keep_trailing_newline=True)
     return  jinja_env.get_template(os.path.basename(template_file_path))
-
 
 def read_html_md_file(file_path):
     '''
@@ -184,13 +181,13 @@ def read_html_md_file(file_path):
     # Using the same format for return 
     return [ "Could not find a content file(.html or .md)" + file_path, {}, ]
 
-
-def write_html_to_file(file_path, html_content):
+def write_content_to_file(file_path, file_content="string", metadata={'title': "Default"}):
     '''
     Write html contents to a file 
     parameter:
         file_path: a path to html file
-        html_content: html content string
+        file_content: html content string
+        metadata: metadata dict for md file, at least 'title' is required
     return: 
         None
     '''
@@ -198,11 +195,19 @@ def write_html_to_file(file_path, html_content):
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
+    content = ""
     if file_path.endswith('.html'):
         # Write to a target file once
-        with open(file_path, 'w') as f_target:
-            f_target.writelines(html_content)
-            return
+        content = file_content
+    elif file_path.endswith('.md'):
+        
+        for key, value in metadata.items():
+            content += f"{key}: {value}\n"
+        content += '\n\n' + file_content
+
+    with open(file_path, 'w') as f_target:
+        f_target.writelines(content)
+        return
 
     return "Could not find a content html file" + file_path
 
@@ -216,7 +221,6 @@ def write_blog_md_file(file_path, blog_meta_and_cotent={}):
         None
     '''
     pass
-
 
 def create_page_list(content_dir='content', content_type='md', target_dir='docs'):
     '''
@@ -259,7 +263,6 @@ def create_page_list(content_dir='content', content_type='md', target_dir='docs'
                     'target_path': target_path,
                     'title': data_title[content_file_name],
                   }
-
 
 def build_full_html(template_content, nav_list=[], html_info={}, list_blog_info=[]):
     '''
@@ -350,9 +353,8 @@ def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='
         copyright_year = get_current_year()
         full_content = full_content.replace("{{copyright_year}}", str(copyright_year))
 
-        write_html_to_file(c['target_path'], full_content)
+        write_content_to_file(c['target_path'], full_content)
         logger.info(f"Created {c['target_path']}")
-
 
 def build_html_files(template_dir='templates', content_dir='content', content_type='md', target_dir='docs'):
     '''
@@ -401,11 +403,11 @@ def build_html_files(template_dir='templates', content_dir='content', content_ty
             full_content = build_full_html(blog_template, data_nav_list, page, list_blog_info=list_blog_metadata)
         else:
             full_content = build_full_html(base_template, data_nav_list, page)
-        write_html_to_file(page['target_path'], full_content)
+        write_content_to_file(page['target_path'], full_content)
         logger.info(f"Created {page['target_path']}")
 
 def create_new_content_file(content_base_template='templates/new_content_base.html', 
-                            content_dict={}, content_dir='content', target_name='new_content.html'):
+                            content_dict={}, content_dir='content', target_name='new_content.md'):
     '''
     Create a new content file
     parameters:
@@ -443,7 +445,7 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
     target_path = os.path.join(content_dir, target_name)
     # if os.path.isfile(target_path):
     #     target_path = target_path + datetime.datetime.now()       
-    write_html_to_file(target_path, new_content)
+    write_content_to_file(target_path, new_content)
     logger.info(f"Created a new content file: {target_path}")
 
 def build_new_blog_post():
@@ -460,13 +462,9 @@ def build_new_blog_post():
     # 1. Read a user input
     # 2. Write the result to "blog" directory
 
-
 def main():
     '''
     main() invokes functions
     '''
-    # This create main html files
     build_html_files()
-
-    # This create blog html files
     build_blog_html_files_from_blog_base()

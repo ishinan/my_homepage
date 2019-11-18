@@ -35,6 +35,10 @@ data_title = {
     'blog': 'Blog',
     'contact':  'Contact',
     'new_content':  'New Content',
+    '1':  'Blog 1',
+    '2':  'Blog 2',
+    '3':  'Blog 3',
+    '4':  'Blog 4',
 }
 
 # Order is importnat for nav. So we use list data type
@@ -217,7 +221,7 @@ def create_page_list(content_dir='content', content_type='md', target_dir='docs'
                   }
 
 
-def build_full_html(template_content, nav_list=[], html_info={}):
+def build_full_html(template_content, nav_list=[], html_info={}, list_blog_info=[]):
     '''
     Build Full conetent of html file
     Return a html content as a html string
@@ -225,6 +229,8 @@ def build_full_html(template_content, nav_list=[], html_info={}):
         template_content: Jinja Template object 
         nav_list: a list of dictionaries of "filename" and "title" for each page
         html_info: a dictionary about a page
+        list_blog_info: if page is a blog, need this to populate a blog summary page
+                        This is a list of dictionaries
     return:
         a html conetent as a string
     '''
@@ -245,6 +251,7 @@ def build_full_html(template_content, nav_list=[], html_info={}):
                     title = page_title,
                     page_content = content,
                     copyright_year = copyright_year, 
+                    blog_sections = list_blog_info,
                     )
     return full_content
 
@@ -345,7 +352,13 @@ def build_html_files(template_dir='templates', content_dir='content', content_ty
     for page in pages:
         logger.debug(f"page: {page}")
         if page['file_name'] == 'blog':
-            full_content = build_full_html(blog_template, data_nav_list, page)
+            list_blog_pages = [ page for page in create_page_list(content_dir='blog', content_type='md', target_dir=target_dir) ]
+            list_blog_metadata = []
+            for blog_page in list_blog_pages:
+                logger.debug(f"blog_page: {blog_page}")
+                content, meta_data = read_html_md_file(blog_page['content_path'])
+                list_blog_metadata.append(meta_data)
+            full_content = build_full_html(blog_template, data_nav_list, page, list_blog_info=list_blog_metadata)
         else:
             full_content = build_full_html(base_template, data_nav_list, page)
         write_html_to_file(page['target_path'], full_content)

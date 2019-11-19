@@ -32,7 +32,7 @@ def build_blog_pages_hw3():
     build each blog pages (homework03)
     '''
     # This create blog html files
-    utils.build_blog_html_files_from_blog_base()
+    utils.build_blog_pages()
 
 def create_new_content_file():
     '''

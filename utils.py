@@ -54,44 +54,7 @@ data_nav_list = [
 pages = []
 
 # Static Blog page info
-blog_posts = [
-    {
-        "content_path": "blog/blog_post_1.html",
-        "target_path": "docs/blog_post_1.html",
-        "blog_date": "August 3rd, 2019",
-        "blog_title": "Planning a summer vacation",
-        "blog_media_image": "./images/skye_from_jacklondon.jpg",
-        "blog_summary": "Planning a summer vacation",
-        "blog_main_paragraph": "Planning a summer vacation.",
-    },
-    {
-        "content_path": "blog/blog_post_2.html",
-        "target_path": "docs/blog_post_2.html",
-        "blog_date": "September 3rd, 2019",
-        "blog_title": "The light at the end of the tunnel",
-        "blog_media_image": "./images/the_light_at_the_end_of_the_tunnel.jpg",
-        "blog_summary": "The light at the end of the tunnel",
-        "blog_main_paragraph": "The light at the end of the tunnel",
-    },
-    {
-        "content_path": "blog/blog_post_3.html",
-        "target_path": "docs/blog_post_3.html",
-        "blog_date": "October 3rd, 2019",
-        "blog_title": "Visiting my home town in Japan",
-        "blog_media_image": "./images/sky_red.jpg",
-        "blog_summary": "Visiting my home town in Japan",
-        "blog_main_paragraph": "Visiting my home town in Japan",
-    },
-    {
-        "content_path": "blog/blog_post_4.html",
-        "target_path": "docs/blog_post_4.html",
-        "blog_date": "November 3rd, 2019",
-        "blog_title": "Looking for peace",
-        "blog_media_image": "./images/maiji_shrine_trii_gate.jpg",
-        "blog_summary": "Looking for peace",
-        "blog_main_paragraph": "Looking for peace",
-    },
-]
+blog_posts = []
 
 def get_current_datetime():
     '''
@@ -132,7 +95,7 @@ def ask_contents():
 
     return user_input_data 
 
-def read_template_html(template_file_path=""):
+def read_template_html(template_dir=".", template_file_path=""):
     '''
     Read from a template html file and return a Jinja Template object
     parameter:
@@ -140,10 +103,14 @@ def read_template_html(template_file_path=""):
     return:
         A Jinja Template object 
     '''
-    # Setting Jinja2 loader path. Required for {% extends %}
-    jinja_env = Environment(loader=FileSystemLoader(os.path.dirname(template_file_path)), 
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName)
+
+    target_path = os.path.join(template_dir, template_file_path)
+    logger.debug(f"template file path: {target_path}" )
+    jinja_env = Environment(loader=FileSystemLoader(os.path.dirname(target_path)), 
                       keep_trailing_newline=True)
-    return  jinja_env.get_template(os.path.basename(template_file_path))
+    return  jinja_env.get_template(os.path.basename(target_path))
 
 def read_html_md_file(file_path):
     '''
@@ -158,17 +125,14 @@ def read_html_md_file(file_path):
                   },
                 ]
     '''
-    # logger: Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
     if file_path.endswith('.html'):
-        # Read a content html
         with open(file_path , 'r') as f_content:
             content_of_html_file = f_content.read()
             return [ content_of_html_file ]
     elif file_path.endswith('.md'):
-        # Read a content md
         with open(file_path , 'r') as f_content:
             content_of_md_file = f_content.read()
             md = markdown.Markdown(extensions=['meta'])
@@ -178,7 +142,6 @@ def read_html_md_file(file_path):
                      dict_of_md_meta_data,
                    ]
 
-    # Using the same format for return 
     return [ "Could not find a content file(.html or .md)" + file_path, {}, ]
 
 def write_content_to_file(file_path, file_content="string", metadata={'title': "Default"}):
@@ -191,16 +154,13 @@ def write_content_to_file(file_path, file_content="string", metadata={'title': "
     return: 
         None
     '''
-    # logger: Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
     content = ""
     if file_path.endswith('.html'):
-        # Write to a target file once
         content = file_content
     elif file_path.endswith('.md'):
-        
         for key, value in metadata.items():
             content += f"{key}: {value}\n"
         content += '\n\n' + file_content
@@ -264,10 +224,32 @@ def create_page_list(content_dir='content', content_type='md', target_dir='docs'
                     'title': data_title[content_file_name],
                   }
 
-def build_full_html(template_content, nav_list=[], html_info={}, list_blog_info=[]):
+def create_blog_metadata_list(blog_page_list=[]):
     '''
-    Build Full conetent of html file
-    Return a html content as a html string
+    Create a list which contains each blog's metadata by reading each blog page md file
+
+    parameters:
+        blog_page_list: a list of blog pages
+    return:
+        list of metadata of blog pages
+    '''
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName)
+
+    list_blog_metadata = []
+    if len(blog_page_list) > 0:
+        for blog_page in blog_page_list:
+            logger.debug(f"blog_page: {blog_page}")
+            _, meta_data = read_html_md_file(blog_page['content_path'])
+            list_blog_metadata.append(meta_data)
+
+    return list_blog_metadata 
+
+
+def create_full_html_content(template_content, nav_list=[], html_info={}, list_blog_info=[]):
+    '''
+    Build a full conetent of html file
+    Return a html content as a string of html content
     parameters:
         template_content: Jinja Template object 
         nav_list: a list of dictionaries of "filename" and "title" for each page
@@ -277,7 +259,6 @@ def build_full_html(template_content, nav_list=[], html_info={}, list_blog_info=
     return:
         a html conetent as a string
     '''
-    # logger: Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
@@ -286,7 +267,6 @@ def build_full_html(template_content, nav_list=[], html_info={}, list_blog_info=
     logger.debug(f"meta_data: {meta_data}" )
     # page_title from either md's meta or html_info['title']
     page_title = meta_data['title'][0] if meta_data['title'] else html_info['title']  
-    # Add the current year to the copyright
     copyright_year = get_current_year()
     full_content = template_content.render(
                     navlinks = nav_list,
@@ -298,7 +278,7 @@ def build_full_html(template_content, nav_list=[], html_info={}, list_blog_info=
                     )
     return full_content
 
-def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='blog', target_dir='docs'):
+def build_blog_pages(template_dir='templates', content_dir='blog', target_dir='docs'):
     '''
     Steps:
         1. Read templates/blog_base.html
@@ -314,21 +294,12 @@ def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='
         None
         Create html files under target_dir
     '''
-    # Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
-    # Read base.html and create a template object
-    template_path = os.path.join(template_dir, 'base.html')
-    logger.debug(f"template file path: {template_path}" )
-    base_template = read_template_html(template_path)
+    base_template = read_template_html(template_dir=template_dir, template_file_path="base.html")
+    blog_template = read_template_html(template_dir=template_dir, template_file_path="blog_base.html")
 
-    # Read blog_base.html and create a template object
-    template_path = os.path.join(template_dir, 'blog_base.html')
-    logger.debug(f"template file path: {template_path}" )
-    blog_template = read_template_html(template_path)
-
-    # Create contents by blog_template
     for c in blog_posts:
         html_blog_content = blog_template.render(
             blog_title = c['blog_title'],
@@ -348,11 +319,6 @@ def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='
         # This is always blog until the main nav include each blog page links
         html_info = { 'html_name': 'blog' }
         full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
-
-        # Add the current year to the copyright
-        copyright_year = get_current_year()
-        full_content = full_content.replace("{{copyright_year}}", str(copyright_year))
-
         write_content_to_file(c['target_path'], full_content)
         logger.info(f"Created {c['target_path']}")
 
@@ -373,19 +339,12 @@ def build_html_files(template_dir='templates', content_dir='content', content_ty
         None
         Create html files under target_dir
     '''
-    # logger: Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
-    # Create a template object from base.html
-    template_path = os.path.join(template_dir, 'base.html')
-    logger.debug(f"template file path: {template_path}" )
-    base_template = read_template_html(template_path)
-
-    # Create a template object from blog_base.html
-    template_path = os.path.join(template_dir, 'blog_base.html')
-    logger.debug(f"template file path: {template_path}" )
-    blog_template = read_template_html(template_path)
+    base_template = read_template_html(template_dir=template_dir, template_file_path="base.html")
+    blog_template = read_template_html(template_dir=template_dir, template_file_path="blog_base.html")
+    each_blog_template = read_template_html(template_dir=template_dir, template_file_path="each_blog_page_base.html")
 
     # Create html page based on template html and content html files
     pages = [ page for page in create_page_list(content_dir=content_dir, content_type='md', target_dir=target_dir) ]
@@ -395,14 +354,10 @@ def build_html_files(template_dir='templates', content_dir='content', content_ty
         logger.debug(f"page: {page}")
         if page['file_name'] == 'blog':
             list_blog_pages = [ page for page in create_page_list(content_dir='blog', content_type='md', target_dir=target_dir) ]
-            list_blog_metadata = []
-            for blog_page in list_blog_pages:
-                logger.debug(f"blog_page: {blog_page}")
-                content, meta_data = read_html_md_file(blog_page['content_path'])
-                list_blog_metadata.append(meta_data)
-            full_content = build_full_html(blog_template, data_nav_list, page, list_blog_info=list_blog_metadata)
+            list_blog_metadata = create_blog_metadata_list(blog_page_list=list_blog_pages)
+            full_content = create_full_html_content(blog_template, data_nav_list, page, list_blog_info=list_blog_metadata)
         else:
-            full_content = build_full_html(base_template, data_nav_list, page)
+            full_content = create_full_html_content(base_template, data_nav_list, page)
         write_content_to_file(page['target_path'], full_content)
         logger.info(f"Created {page['target_path']}")
 
@@ -421,7 +376,6 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
     return:
         None
     '''
-    # Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName) 
 
@@ -455,7 +409,6 @@ def build_new_blog_post():
     return 
         blog_file_path e.g. 'blog/5.md'
     '''
-    # Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName) 
 
@@ -463,8 +416,5 @@ def build_new_blog_post():
     # 2. Write the result to "blog" directory
 
 def main():
-    '''
-    main() invokes functions
-    '''
     build_html_files()
-    build_blog_html_files_from_blog_base()
+    build_blog_pages()

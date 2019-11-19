@@ -242,6 +242,7 @@ def create_blog_metadata_list(blog_page_list=[]):
         for blog_page in blog_page_list:
             logger.debug(f"blog_page: {blog_page}")
             _, meta_data = read_html_md_file(blog_page['content_path'])
+            meta_data['html_name'] = blog_page['html_name']
             list_blog_metadata.append(meta_data)
 
     return list_blog_metadata 

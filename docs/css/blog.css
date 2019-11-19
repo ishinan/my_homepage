@@ -1,5 +1,11 @@
 .media_image {
     height: 150px;
+    border-radius: 20px;
+}
+
+.media_image_in_blog {
+    border-radius: 30px;
+    height: 350px;
 }
 
 .summary_subject {
@@ -7,6 +13,6 @@
     border-radius: 25px;
 }
 
-.media_image {
-    border-radius: 20px;
+.jbtron_in_blog {
+    background-color: rgba(47,79,79);
 }

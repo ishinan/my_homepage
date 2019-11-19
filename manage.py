@@ -2,14 +2,16 @@ import sys
 import os
 import utils
 
+
 def usage():
     '''
     print usage if arguments is not proper
     '''
     utility_name = os.path.basename(sys.argv[0])
     print(f"""Usage:
-    {utility_name} new   : To create a new content html file
-    {utility_name} build : To create static html files based on templates and contents
+    {utility_name} new           : To create a new content html file
+    {utility_name} build         : To create static html files based on templates and contents
+    {utility_name} new-blog-post : To create a new blog page
     """)
 
 def build_static_site():
@@ -18,7 +20,6 @@ def build_static_site():
     '''
     # This create main html files
     utils.build_html_files()
-
 
 def build_new_blog_post():
     '''

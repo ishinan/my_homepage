@@ -371,8 +371,15 @@ def build_new_blog_post():
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName) 
 
-    # 1. Read a user input
-    # 2. Write the result to "blog" directory
+    print("build_new_blog_post() was called")
+    # 1. Read a user input 
+    #   - Should accept a md file, read the content
+    #   - A provided md file must contain required metadata such as title, subject, image
+    # 2. Write the result to "blog" directory as a md format, incremented file number
+    #       - date time is automatically added
+    #       - date time is automatically added
+   
+
 
 def main():
     build_html_files()

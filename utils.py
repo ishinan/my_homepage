@@ -278,49 +278,6 @@ def create_full_html_content(template_content, nav_list=[], html_info={}, list_b
                     )
     return full_content
 
-def build_blog_pages(template_dir='templates', content_dir='blog', target_dir='docs'):
-    '''
-    Steps:
-        1. Read templates/blog_base.html
-        2. Create a page list 
-        3. Read each content html from page list
-        4. Replace the blog_base.html contents based on the page list data 
-        5. Write the result to a html file as blog_post_1.html, 2, 3, and so on.
-    parameter:
-            template_dir: dir path to read 'base.html' template
-            content_dir: dir path to read conetnt html files(Not used, place holder for future usage)
-            target_dir: dir path to write final html files
-    return:
-        None
-        Create html files under target_dir
-    '''
-    loggerName = inspect.stack()[0][3]
-    logger = logging.getLogger(loggerName)
-
-    base_template = read_template_html(template_dir=template_dir, template_file_path="base.html")
-    blog_template = read_template_html(template_dir=template_dir, template_file_path="blog_base.html")
-
-    for c in blog_posts:
-        html_blog_content = blog_template.render(
-            blog_title = c['blog_title'],
-            blog_media_image = c['blog_media_image'],
-            blog_date = c['blog_date'],
-            blog_summary = c['blog_summary'],
-            blog_main_paragraph = c['blog_main_paragraph'],
-        )
-
-        logger.debug(f"blog post dictionary: {c}")
-        html_file = base_template.render(
-                title = c['blog_title'],
-                page_content = html_blog_content
-        )
-
-        # Add "active" css class for nav
-        # This is always blog until the main nav include each blog page links
-        html_info = { 'html_name': 'blog' }
-        full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
-        write_content_to_file(c['target_path'], full_content)
-
 def build_html_files(template_dir='templates', content_dir='content', content_type='md', target_dir='docs'):
     '''
     Steps:
@@ -419,4 +376,3 @@ def build_new_blog_post():
 
 def main():
     build_html_files()
-    build_blog_pages()

@@ -27,13 +27,6 @@ def build_new_blog_post():
     '''
     utils.build_new_blog_post()
 
-def build_blog_pages_hw3():
-    '''
-    build each blog pages (homework03)
-    '''
-    # This create blog html files
-    utils.build_blog_pages()
-
 def create_new_content_file():
     '''
     create a new content file in 'content' directory
@@ -48,7 +41,6 @@ def main():
     func_list = {
         'new': create_new_content_file,
         'build': build_static_site,
-        'bpages':build_blog_pages_hw3,
         'new-blog-post':build_new_blog_post,
     }
     # Removing python command if this utility is called with a python command

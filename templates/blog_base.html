@@ -40,6 +40,6 @@
     </div>
   </div>
 </div>
-  <hr/>
+{% if loop.last == False %}  <hr/> {% endif %}
 {% endfor -%}
 {% endblock %}

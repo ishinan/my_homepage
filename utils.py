@@ -265,16 +265,20 @@ def create_full_html_content(template_content, nav_list=[], html_info={}, list_b
     meta_data = {}
     content, meta_data = read_html_md_file(html_info['content_path'])
     logger.debug(f"meta_data: {meta_data}" )
+    content_dir = os.path.dirname(html_info['content_path'])
+    logger.debug(f"content_dir: {content_dir}" )
     # page_title from either md's meta or html_info['title']
     page_title = meta_data['title'][0] if meta_data['title'] else html_info['title']  
     copyright_year = get_current_year()
     full_content = template_content.render(
                     navlinks = nav_list,
                     outputfile = html_info['html_name'],
+                    source_path = content_dir,
                     title = page_title,
                     page_content = content,
                     copyright_year = copyright_year, 
                     blog_sections = list_blog_info,
+                    blog_page = meta_data,
                     )
     return full_content
 

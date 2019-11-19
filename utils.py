@@ -167,6 +167,7 @@ def write_content_to_file(file_path, file_content="string", metadata={'title': "
 
     with open(file_path, 'w') as f_target:
         f_target.writelines(content)
+        logger.info(f"Created {file_path}")
         return
 
     return "Could not find a content html file" + file_path
@@ -245,7 +246,6 @@ def create_blog_metadata_list(blog_page_list=[]):
 
     return list_blog_metadata 
 
-
 def create_full_html_content(template_content, nav_list=[], html_info={}, list_blog_info=[]):
     '''
     Build a full conetent of html file
@@ -320,7 +320,6 @@ def build_blog_pages(template_dir='templates', content_dir='blog', target_dir='d
         html_info = { 'html_name': 'blog' }
         full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
         write_content_to_file(c['target_path'], full_content)
-        logger.info(f"Created {c['target_path']}")
 
 def build_html_files(template_dir='templates', content_dir='content', content_type='md', target_dir='docs'):
     '''
@@ -356,10 +355,13 @@ def build_html_files(template_dir='templates', content_dir='content', content_ty
             list_blog_pages = [ page for page in create_page_list(content_dir='blog', content_type='md', target_dir=target_dir) ]
             list_blog_metadata = create_blog_metadata_list(blog_page_list=list_blog_pages)
             full_content = create_full_html_content(blog_template, data_nav_list, page, list_blog_info=list_blog_metadata)
+            for blog_page in list_blog_pages:
+                blog_full_content = create_full_html_content(each_blog_template , data_nav_list, blog_page, list_blog_info=list_blog_metadata)
+                write_content_to_file(blog_page['target_path'], blog_full_content)
         else:
             full_content = create_full_html_content(base_template, data_nav_list, page)
+
         write_content_to_file(page['target_path'], full_content)
-        logger.info(f"Created {page['target_path']}")
 
 def create_new_content_file(content_base_template='templates/new_content_base.html', 
                             content_dict={}, content_dir='content', target_name='new_content.md'):

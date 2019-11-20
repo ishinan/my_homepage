@@ -26,7 +26,12 @@ def build_new_blog_post():
     build a new blog post md file under blog dirctory by asking user inputs, 
     and populate a blog_post_{number}.html file under docs directory
     '''
-    utils.build_new_blog_post()
+    f_path = utils.build_new_blog_post()
+    print(f"Created: {f_path})
+
+def test_cache():
+    cache_path = utils.create_file_list_cache('blog')
+    print(f"Cache updated: {cache_path}")
 
 def create_new_content_file():
     '''
@@ -34,12 +39,6 @@ def create_new_content_file():
     '''
     content_dict_user_input = utils.ask_contents()
     utils.create_new_content_file(content_dict=content_dict_user_input)
-
-def create_cache_file():
-    '''
-    Test 
-    '''
-    utils.create_file_list_cache('blog')
 
 def main():
     '''
@@ -49,7 +48,7 @@ def main():
         'new': create_new_content_file,
         'build': build_static_site,
         'new-blog-post':build_new_blog_post,
-        'cache': create_cache_file,
+        'cache':test_cache,
     }
     # Removing python command if this utility is called with a python command
     python_cmd_list = [ 'python', 'python2', 'python3', 'py2', 'py3' ]

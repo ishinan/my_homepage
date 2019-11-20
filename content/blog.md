@@ -1,5 +1,5 @@
 title: Blog
-
+nav_link_order: 3
 
 <div class="jumbotron">
     <h1>Masa's Blog</h1>

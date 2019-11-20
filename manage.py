@@ -2,14 +2,16 @@ import sys
 import os
 import utils
 
+
 def usage():
     '''
     print usage if arguments is not proper
     '''
     utility_name = os.path.basename(sys.argv[0])
     print(f"""Usage:
-    {utility_name} new   : To create a new content html file
-    {utility_name} build : To create static html files based on templates and contents
+    {utility_name} new           : To create a new content html file
+    {utility_name} build         : To create static html files based on templates and contents
+    {utility_name} new-blog-post : To create a new blog page
     """)
 
 def build_static_site():
@@ -17,40 +19,30 @@ def build_static_site():
     build static site from the current content
     '''
     # This create main html files
-    utils.build_html_files_from_base()
-    # This create blog html files
-    utils.build_blog_html_files_from_blog_base()
+    utils.build_html_files()
 
-def ask_contents():
+def build_new_blog_post():
     '''
-    Ask user input for 
-        'page_title', 'main_subject', 'main_comments', 'body_paragraph',
+    build a new blog post md file under blog dirctory by asking user inputs, 
+    and populate a blog_post_{number}.html file under docs directory
     '''
-    item_list = [ 'page_title', 'main_subject', 'main_comments', 'body_paragraph' ]
-    user_input_data = {}
-    print("Need inputs for some contents")
-    for item in item_list:
-        user_input_data[item] = input(f"-> {item}: ")
-        if len(user_input_data[item]) == 0:
-            user_input_data[item] = "PlaceHolder: " + item
-
-    return user_input_data 
+    utils.build_new_blog_post()
 
 def create_new_content_file():
     '''
     create a new content file in 'content' directory
-
     '''
-    content_dict_user_input = ask_contents()
+    content_dict_user_input = utils.ask_contents()
     utils.create_new_content_file(content_dict=content_dict_user_input)
 
-def main_test():
+def main():
     '''
     Run utils with argements(new or build). 
     '''
     func_list = {
         'new': create_new_content_file,
         'build': build_static_site,
+        'new-blog-post':build_new_blog_post,
     }
     # Removing python command if this utility is called with a python command
     python_cmd_list = [ 'python', 'python2', 'python3', 'py2', 'py3' ]
@@ -61,17 +53,10 @@ def main_test():
     if len(sys.argv) == 2 and sys.argv[1] in func_list.keys():
            func_list[sys.argv[1]]()
     else:
-        print("Must have one argument [new|build]")
+        options = '|'.join([ x for x in func_list.keys() ])
+        print(f"Must have one argument [{options}]")
         usage()
 
-def main():
-    '''
-    Run utils with argements(new or build). 
-    '''
-    # This create main html files
-    utils.build_html_files_from_base()
-    # This create blog html files
-    utils.build_blog_html_files_from_blog_base()
 
 if __name__ == '__main__':
-    main_test()
+    main()

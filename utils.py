@@ -21,9 +21,8 @@ import datetime
 import logging
 import logging.config
 import inspect
-from jinja2 import Template
+from jinja2 import Environment, FileSystemLoader
 import markdown
-
 
 # Read log.cfg file for loggeing congiguration
 logging.config.fileConfig('log.cfg')
@@ -36,6 +35,10 @@ data_title = {
     'blog': 'Blog',
     'contact':  'Contact',
     'new_content':  'New Content',
+    '1':  'Blog 1',
+    '2':  'Blog 2',
+    '3':  'Blog 3',
+    '4':  'Blog 4',
 }
 
 # Order is importnat for nav. So we use list data type
@@ -51,46 +54,21 @@ data_nav_list = [
 pages = []
 
 # Static Blog page info
-blog_posts = [
-    {
-        "content_path": "blog/blog_post_1.html",
-        "target_path": "docs/blog_post_1.html",
-        "blog_date": "August 3rd, 2019",
-        "blog_title": "Planning a summer vacation",
-        "blog_media_image": "./images/skye_from_jacklondon.jpg",
-        "blog_summary": "Planning a summer vacation",
-        "blog_main_paragraph": "Planning a summer vacation.",
-    },
-    {
-        "content_path": "blog/blog_post_2.html",
-        "target_path": "docs/blog_post_2.html",
-        "blog_date": "September 3rd, 2019",
-        "blog_title": "The light at the end of the tunnel",
-        "blog_media_image": "./images/the_light_at_the_end_of_the_tunnel.jpg",
-        "blog_summary": "The light at the end of the tunnel",
-        "blog_main_paragraph": "The light at the end of the tunnel",
-    },
-    {
-        "content_path": "blog/blog_post_3.html",
-        "target_path": "docs/blog_post_3.html",
-        "blog_date": "October 3rd, 2019",
-        "blog_title": "Visiting my home town in Japan",
-        "blog_media_image": "./images/sky_red.jpg",
-        "blog_summary": "Visiting my home town in Japan",
-        "blog_main_paragraph": "Visiting my home town in Japan",
-    },
-    {
-        "content_path": "blog/blog_post_4.html",
-        "target_path": "docs/blog_post_4.html",
-        "blog_date": "November 3rd, 2019",
-        "blog_title": "Looking for peace",
-        "blog_media_image": "./images/maiji_shrine_trii_gate.jpg",
-        "blog_summary": "Looking for peace",
-        "blog_main_paragraph": "Looking for peace",
-    },
-]
+blog_posts = []
 
-
+def get_current_datetime():
+    '''
+    Get year, month, day, hour, min from datetime module
+    return:
+        datetime dictionary { year, month, day, hour, minute }
+    '''
+    now = datetime.datetime.now()
+    return { 'year': now.year, 
+             'month': now.month,
+             'day': now.day,
+             'hour': now.hour,
+             'minute': now.minute
+            }
 
 def get_current_year():
     '''
@@ -99,11 +77,25 @@ def get_current_year():
     return:
         current_year as integer
     '''
-    now = datetime.datetime.now()
-    return now.year
+    d = get_current_datetime()
+    return d['year']
 
+def ask_contents():
+    '''
+    Ask user input for 
+        'page_title', 'main_subject', 'main_comments', 'body_paragraph',
+    '''
+    item_list = [ 'page_title', 'main_subject', 'main_comments', 'body_paragraph' ]
+    user_input_data = {}
+    print("Need inputs for some contents")
+    for item in item_list:
+        user_input_data[item] = input(f"-> {item}: ")
+        if len(user_input_data[item]) == 0:
+            user_input_data[item] = "PlaceHolder: " + item
 
-def read_template_html(template_file_path=""):
+    return user_input_data 
+
+def read_template_html(template_dir=".", template_file_path=""):
     '''
     Read from a template html file and return a Jinja Template object
     parameter:
@@ -111,13 +103,14 @@ def read_template_html(template_file_path=""):
     return:
         A Jinja Template object 
     '''
-    if template_file_path.endswith('.html'):
-        with open(template_file_path, 'r') as f:
-            template_html  = f.read()
-            return Template(template_html)
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName)
 
-    return Template("Could not find a template html file")
-
+    target_path = os.path.join(template_dir, template_file_path)
+    logger.debug(f"template file path: {target_path}" )
+    jinja_env = Environment(loader=FileSystemLoader(os.path.dirname(target_path)), 
+                      keep_trailing_newline=True)
+    return  jinja_env.get_template(os.path.basename(target_path))
 
 def read_html_md_file(file_path):
     '''
@@ -132,53 +125,65 @@ def read_html_md_file(file_path):
                   },
                 ]
     '''
-    # logger: Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
     if file_path.endswith('.html'):
-        # Read a content html
         with open(file_path , 'r') as f_content:
             content_of_html_file = f_content.read()
             return [ content_of_html_file ]
     elif file_path.endswith('.md'):
-        # Read a content md
         with open(file_path , 'r') as f_content:
             content_of_md_file = f_content.read()
-            md = markdown.Markdown(extensions=['meta'])
+            md = markdown.Markdown(extensions=['meta', 'fenced_code', 'codehilite'])
             html_of_md_file = md.convert(content_of_md_file)
             dict_of_md_meta_data = md.Meta
             return [ html_of_md_file, 
                      dict_of_md_meta_data,
                    ]
 
-    # Using the same format for return 
     return [ "Could not find a content file(.html or .md)" + file_path, {}, ]
 
-
-def write_html_to_file(file_path, html_content):
+def write_content_to_file(file_path, file_content="string", metadata={'title': "Default"}):
     '''
     Write html contents to a file 
     parameter:
         file_path: a path to html file
-        html_content: html content string
+        file_content: html content string
+        metadata: metadata dict for md file, at least 'title' is required
     return: 
         None
     '''
-    # logger: Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
+    content = ""
     if file_path.endswith('.html'):
-        # Write to a target file once
-        with open(file_path, 'w') as f_target:
-            f_target.writelines(html_content)
-            return
+        content = file_content
+    elif file_path.endswith('.md'):
+        for key, value in metadata.items():
+            content += f"{key}: {value}\n"
+        content += '\n\n' + file_content
+
+    with open(file_path, 'w') as f_target:
+        f_target.writelines(content)
+        logger.info(f"Created {file_path}")
+        return
 
     return "Could not find a content html file" + file_path
 
+def write_blog_md_file(file_path, blog_meta_and_cotent={}):
+    '''
+    Write a new blog content and metadata to a md file
+    parameters:
+        file_path
+        blog_meta_and_content 
+    return:
+        None
+    '''
+    pass
 
-def create_page_list(content_dir='content', content_type='html', target_dir='docs'):
+def create_page_list(content_dir='content', content_type='md', target_dir='docs'):
     '''
     This is a generator.
     Read a list of content html files under a content directory
@@ -195,7 +200,7 @@ def create_page_list(content_dir='content', content_type='html', target_dir='doc
 
     parameters:
         content_dir: default: 'content'
-        content_type: file exntension: .md or .html
+        content_type: file exntension: .md or .html (default: md)
         target_dir: default: 'docs'
     return:
         a dictionary of 'content_path', 'file_name', 'html_name', 'target_path', 'title' 
@@ -217,112 +222,76 @@ def create_page_list(content_dir='content', content_type='html', target_dir='doc
                     'file_name': content_file_name,
                     'html_name': target_file_name,
                     'target_path': target_path,
-                    'title': data_title[content_file_name],
+                    #'title': data_title[content_file_name],
                   }
 
-
-def build_full_html(template_content, nav_list=[], html_info={}):
+def create_blog_metadata_list(blog_page_list=[]):
     '''
-    Build Full conetent of html file
-    Return a html content as a html string
+    Create a list which contains each blog's metadata by reading each blog page md file
+
+    parameters:
+        blog_page_list: a list of blog pages
+    return:
+        list of metadata of blog pages
+    '''
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName)
+
+    list_blog_metadata = []
+    if len(blog_page_list) > 0:
+        for blog_page in blog_page_list:
+            logger.debug(f"blog_page: {blog_page}")
+            _, meta_data = read_html_md_file(blog_page['content_path'])
+            meta_data['html_name'] = blog_page['html_name']
+            list_blog_metadata.append(meta_data)
+
+    return list_blog_metadata 
+
+def create_full_html_content(template_content, nav_list=[], html_info={}, list_blog_info=[]):
+    '''
+    Build a full conetent of html file
+    Return a html content as a string of html content
     parameters:
         template_content: Jinja Template object 
         nav_list: a list of dictionaries of "filename" and "title" for each page
         html_info: a dictionary about a page
+        list_blog_info: if page is a blog, need this to populate a blog summary page
+                        This is a list of dictionaries
     return:
         a html conetent as a string
     '''
-    # logger: Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
     meta_data = {}
     content, meta_data = read_html_md_file(html_info['content_path'])
     logger.debug(f"meta_data: {meta_data}" )
+    content_dir = os.path.dirname(html_info['content_path'])
+    logger.debug(f"content_dir: {content_dir}" )
+    if  len(list_blog_info) > 0:
+        list_blog_info = sorted(list_blog_info, key=lambda x: int(x['html_name'].replace(".html", "")), reverse=True )
     # page_title from either md's meta or html_info['title']
     page_title = meta_data['title'][0] if meta_data['title'] else html_info['title']  
-    html_file = template_content.render(
+    copyright_year = get_current_year()
+    full_content = template_content.render(
                     navlinks = nav_list,
                     outputfile = html_info['html_name'],
+                    source_path = content_dir,
                     title = page_title,
                     page_content = content,
-                )
-    # Add "active" css class for nav
-    #full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
-    full_content = html_file
-    # Add the current year to the copyright
-    copyright_year = get_current_year()
-    full_content = full_content.replace("{{copyright_year}}", str(copyright_year))
-
+                    copyright_year = copyright_year, 
+                    blog_sections = list_blog_info,
+                    blog_page = meta_data,
+                    )
     return full_content
 
-
-def build_blog_html_files_from_blog_base(template_dir='templates', content_dir='blog', target_dir='docs'):
+def build_html_files(template_dir='templates', content_dir='content', content_type='md', target_dir='docs'):
     '''
     Steps:
-        1. Read templates/blog_base.html
+        1. Read jinja template files( base.html and blog_base.html )
         2. Create a page list 
         3. Read each content html from page list
-        4. Replace the blog_base.html contents based on the page list data 
-        5. Write the result to a html file as blog_post_1.html, 2, 3, and so on.
-    parameter:
-            template_dir: dir path to read 'base.html' template
-            content_dir: dir path to read conetnt html files(Not used, place holder for future usage)
-            target_dir: dir path to write final html files
-    return:
-        None
-        Create html files under target_dir
-    '''
-    # Gets the name of the function from where this function is called
-    loggerName = inspect.stack()[0][3]
-    logger = logging.getLogger(loggerName)
-
-    # Read base.html and create a template object
-    template_path = os.path.join(template_dir, 'base.html')
-    logger.debug(f"template file path: {template_path}" )
-    base_template = read_template_html(template_path)
-
-    # Read blog_base.html and create a template object
-    template_path = os.path.join(template_dir, 'blog_base.html')
-    logger.debug(f"template file path: {template_path}" )
-    blog_template = read_template_html(template_path)
-
-    # Create contents by blog_template
-    for c in blog_posts:
-        html_blog_content = blog_template.render(
-            blog_title = c['blog_title'],
-            blog_media_image = c['blog_media_image'],
-            blog_date = c['blog_date'],
-            blog_summary = c['blog_summary'],
-            blog_main_paragraph = c['blog_main_paragraph'],
-        )
-
-        logger.debug(f"blog post dictionary: {c}")
-        html_file = base_template.render(
-                title = c['blog_title'],
-                page_content = html_blog_content
-        )
-
-        # Add "active" css class for nav
-        # This is always blog until the main nav include each blog page links
-        html_info = { 'html_name': 'blog' }
-        full_content = html_file.replace(f"\" href=\"./{html_info['html_name']}", f" active\" href=\"./{html_info['html_name']}")
-
-        # Add the current year to the copyright
-        copyright_year = get_current_year()
-        full_content = full_content.replace("{{copyright_year}}", str(copyright_year))
-
-        write_html_to_file(c['target_path'], full_content)
-        logger.info(f"Created {c['target_path']}")
-
-
-def build_html_files_from_base(template_dir='templates', content_dir='content', content_type='html', target_dir='docs'):
-    '''
-    Steps:
-        1. Read base.html
-        2. Create a page list 
-        3. Read each content html from page list
-        4. Replace base.html contents based on the page list data 
+        4. Render a jinja template based on the page data
         5. Write the result to a html file
     parameter:
         template_dir: dir path to read 'base.html' template
@@ -333,14 +302,12 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
         None
         Create html files under target_dir
     '''
-    # logger: Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
 
-    # Creating a template object which contains template html file
-    template_path = os.path.join(template_dir, 'base.html')
-    logger.debug(f"template file path: {template_path}" )
-    base_template = read_template_html(template_path)
+    base_template = read_template_html(template_dir=template_dir, template_file_path="base.html")
+    blog_template = read_template_html(template_dir=template_dir, template_file_path="blog_base.html")
+    each_blog_template = read_template_html(template_dir=template_dir, template_file_path="each_blog_page_base.html")
 
     # Create html page based on template html and content html files
     pages = [ page for page in create_page_list(content_dir=content_dir, content_type='md', target_dir=target_dir) ]
@@ -348,13 +315,20 @@ def build_html_files_from_base(template_dir='templates', content_dir='content', 
     # Combine template, content, meta data
     for page in pages:
         logger.debug(f"page: {page}")
-        full_content = build_full_html(base_template, data_nav_list, page)
-        write_html_to_file(page['target_path'], full_content)
-        logger.info(f"Created {page['target_path']}")
+        if page['file_name'] == 'blog':
+            list_blog_pages = [ page for page in create_page_list(content_dir='blog', content_type='md', target_dir=target_dir) ]
+            list_blog_metadata = create_blog_metadata_list(blog_page_list=list_blog_pages)
+            full_content = create_full_html_content(blog_template, data_nav_list, page, list_blog_info=list_blog_metadata)
+            for blog_page in list_blog_pages:
+                blog_full_content = create_full_html_content(each_blog_template , data_nav_list, blog_page, list_blog_info=list_blog_metadata)
+                write_content_to_file(blog_page['target_path'], blog_full_content)
+        else:
+            full_content = create_full_html_content(base_template, data_nav_list, page)
 
+        write_content_to_file(page['target_path'], full_content)
 
 def create_new_content_file(content_base_template='templates/new_content_base.html', 
-                            content_dict={}, content_dir='content', target_name='new_content.html'):
+                            content_dict={}, content_dir='content', target_name='new_content.md'):
     '''
     Create a new content file
     parameters:
@@ -368,7 +342,6 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
     return:
         None
     '''
-    # Gets the name of the function from where this function is called
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName) 
 
@@ -392,17 +365,28 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
     target_path = os.path.join(content_dir, target_name)
     # if os.path.isfile(target_path):
     #     target_path = target_path + datetime.datetime.now()       
-    write_html_to_file(target_path, new_content)
+    write_content_to_file(target_path, new_content)
     logger.info(f"Created a new content file: {target_path}")
 
+def build_new_blog_post():
+    '''
+    build a new blog post md file under blog dirctory by asking user inputs
+
+    return 
+        blog_file_path e.g. 'blog/5.md'
+    '''
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName) 
+
+    print("build_new_blog_post() was called")
+    # 1. Read a user input 
+    #   - Should accept a md file, read the content
+    #   - A provided md file must contain required metadata such as title, subject, image
+    # 2. Write the result to "blog" directory as a md format, incremented file number
+    #       - date time is automatically added
+    #       - date time is automatically added
+   
 
 
 def main():
-    '''
-    main() invokes functions
-    '''
-    # This create main html files
-    build_html_files_from_base()
-
-    # This create blog html files
-    build_blog_html_files_from_blog_base()
+    build_html_files()

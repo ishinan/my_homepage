@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block each_blog_base %}
+<div class="jumbotron jumbotron-project jbtron_in_blog" style="background-image: url('{{ blog_page.image_alt[0] }}');">
+  <h1>{{ blog_page.subject[0] }}</h1>
+  <p>{{ blog_page.short_summary[0]|truncate(80) }}</p>
+</div>
+  <div class="media">
+    <img class="mr-3 media_image_in_blog" src="{{ blog_page.image[0] }}" alt="{{ blog_page.image_alt[0] }}">
+    <div class="media-body">
+    <h4>{{ blog_page.subject[0] }}</h4>
+    <h5>{{ blog_page.created_date[0] }}</h5>
+    <p>{{ blog_page.short_summary[0] }}</p>
+  </div>
+</div>
+<div class="second-block">
+{{ page_content }}
+</div>
+{% endblock %}
+

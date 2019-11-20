@@ -27,9 +27,9 @@ def build_new_blog_post():
     and populate a blog_post_{number}.html file under docs directory
     '''
     f_path = utils.build_new_blog_post()
-    print(f"Created: {f_path})
+    print(f"Created: {f_path}")
 
-def test_cache():
+def cache_update():
     cache_path = utils.create_file_list_cache('blog')
     print(f"Cache updated: {cache_path}")
 
@@ -47,8 +47,8 @@ def main():
     func_list = {
         'new': create_new_content_file,
         'build': build_static_site,
-        'new-blog-post':build_new_blog_post,
-        'cache':test_cache,
+        'new-blog-post': build_new_blog_post,
+        'cache': cache_update,
     }
     # Removing python command if this utility is called with a python command
     python_cmd_list = [ 'python', 'python2', 'python3', 'py2', 'py3' ]

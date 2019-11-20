@@ -245,6 +245,8 @@ def create_blog_metadata_list(blog_page_list=[]):
             meta_data['html_name'] = blog_page['html_name']
             list_blog_metadata.append(meta_data)
 
+    if  len(list_blog_metadata) > 0:
+        list_blog_metadata = sorted(list_blog_metadata , key=lambda x: int(x['html_name'].replace(".html", "")), reverse=True )
     return list_blog_metadata 
 
 def create_full_html_content(template_content, nav_list=[], html_info={}, list_blog_info=[]):
@@ -268,8 +270,6 @@ def create_full_html_content(template_content, nav_list=[], html_info={}, list_b
     logger.debug(f"meta_data: {meta_data}" )
     content_dir = os.path.dirname(html_info['content_path'])
     logger.debug(f"content_dir: {content_dir}" )
-    if  len(list_blog_info) > 0:
-        list_blog_info = sorted(list_blog_info, key=lambda x: int(x['html_name'].replace(".html", "")), reverse=True )
     # page_title from either md's meta or html_info['title']
     page_title = meta_data['title'][0] if meta_data['title'] else html_info['title']  
     copyright_year = get_current_year()

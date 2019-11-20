@@ -21,13 +21,15 @@ import datetime
 import logging
 import logging.config
 import inspect
+import json
 from jinja2 import Environment, FileSystemLoader
 import markdown
 
 # Read log.cfg file for loggeing congiguration
 logging.config.fileConfig('log.cfg')
 
-
+# Define global cache file name
+dir_cache_file_name = '_dir_cache.json'
 # To map html file name with title tag
 data_title = {
     'index': 'Home',
@@ -146,7 +148,10 @@ def read_html_md_file(file_path):
 
 def write_content_to_file(file_path, file_content="string", metadata={'title': "Default"}):
     '''
-    Write html contents to a file 
+    Write content to a file 
+        if destination_path is html, write content to it
+        if destination_path is md, write metadata and content to it
+        if destination_path is a json, write content to it by json format
     parameter:
         file_path: a path to html file
         file_content: html content string
@@ -164,13 +169,15 @@ def write_content_to_file(file_path, file_content="string", metadata={'title': "
         for key, value in metadata.items():
             content += f"{key}: {value}\n"
         content += '\n\n' + file_content
+    elif file_path.endswith('.json'):
+        content = json.dumps(file_content)
 
     with open(file_path, 'w') as f_target:
         f_target.writelines(content)
         logger.info(f"Created {file_path}")
         return
 
-    return "Could not find a content html file" + file_path
+    return "Could not write to a file: " + file_path
 
 def write_blog_md_file(file_path, blog_meta_and_cotent={}):
     '''
@@ -368,6 +375,56 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
     write_content_to_file(target_path, new_content)
     logger.info(f"Created a new content file: {target_path}")
 
+def create_new_blog_content(targed_dir='blog', source_path=''):
+    '''
+    Read a md file, check metadata, and create a new blog md file in 'blog' dir.
+    then, return created blog content in target_dir('blog')
+
+    parameters:
+        source_path: user created markdown file containing a blog content and blog metadata
+                     required metadata:
+                        title, subject, created_date, image, image_alt, short_summary
+    return:
+        a string name of a path to blog md file (example, 'blog/5.md')
+    '''
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName) 
+
+    cache_file_path = os.path.join(targed_dir, dir_cache_file_name)
+    if not os.path.isfile(cache_file_path):
+        create_file_list_cache(target_dir=targed_dir)
+
+
+
+def create_file_list_cache(target_dir='.', file_ext='.md'):
+    '''
+    Create a cache file to keep file list in the directory
+         cache file name: _dir_cache.json
+         It contains, the diretory name and list of files 
+         It is a json format
+            {"dir_name": "blog", "list_files": ["5.md", "1.md", "4.md", "3.md", "2.md"], "created_time": "20191120_946"}
+
+    parameter:
+        target_dir
+    return:
+        created file path './blog/_dir.cache'
+    '''
+    t = get_current_datetime()
+    created_time = str(t['year']) + str(t['month']) + str(t['day']) + "_" + str(t['hour']) + str(t['minute'])
+
+    for curr, list_dirs, list_files in os.walk(target_dir):
+        if dir_cache_file_name in list_files:
+            list_files.remove(dir_cache_file_name)
+
+    cache_content =  { 'dir_name': target_dir,
+                       'list_files': list_files, 
+                       'created_time': created_time,
+                     }
+    cache_content_json = json.dumps(cache_content)
+    target_path = os.path.join(target_dir, dir_cache_file_name)
+    write_content_to_file(target_path, cache_content_json)
+    return target_path 
+
 def build_new_blog_post():
     '''
     build a new blog post md file under blog dirctory by asking user inputs
@@ -385,7 +442,17 @@ def build_new_blog_post():
     # 2. Write the result to "blog" directory as a md format, incremented file number
     #       - date time is automatically added
     #       - date time is automatically added
-   
+    
+    user_input_blog_file_path = ''
+    while True: 
+        file_path = input('Provide a file path to a blog post markdown(.md) file: ')
+        if file_path.endwith('.md') and os.path.isfile(file_path):
+            user_input_blog_file_path  = file_path
+            break
+        print("Cannot find the markdown(.md) file")
+
+    blog_file_path = create_new_blog_content(source_path=user_input_blog_file_path)
+
 
 
 def main():

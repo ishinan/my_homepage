@@ -135,7 +135,7 @@ def read_html_md_file(file_path):
     elif file_path.endswith('.md'):
         with open(file_path , 'r') as f_content:
             content_of_md_file = f_content.read()
-            md = markdown.Markdown(extensions=['meta'])
+            md = markdown.Markdown(extensions=['meta', 'fenced_code', 'codehilite'])
             html_of_md_file = md.convert(content_of_md_file)
             dict_of_md_meta_data = md.Meta
             return [ html_of_md_file, 
@@ -222,7 +222,7 @@ def create_page_list(content_dir='content', content_type='md', target_dir='docs'
                     'file_name': content_file_name,
                     'html_name': target_file_name,
                     'target_path': target_path,
-                    'title': data_title[content_file_name],
+                    #'title': data_title[content_file_name],
                   }
 
 def create_blog_metadata_list(blog_page_list=[]):

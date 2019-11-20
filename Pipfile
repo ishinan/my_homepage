@@ -9,6 +9,7 @@ pylint = "*"
 [packages]
 jinja2 = "*"
 markdown = "*"
+pygments = "*"
 
 [requires]
 python_version = "3.7"

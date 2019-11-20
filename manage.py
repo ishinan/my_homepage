@@ -35,6 +35,12 @@ def create_new_content_file():
     content_dict_user_input = utils.ask_contents()
     utils.create_new_content_file(content_dict=content_dict_user_input)
 
+def create_cache_file():
+    '''
+    Test 
+    '''
+    utils.create_file_list_cache('blog')
+
 def main():
     '''
     Run utils with argements(new or build). 
@@ -43,6 +49,7 @@ def main():
         'new': create_new_content_file,
         'build': build_static_site,
         'new-blog-post':build_new_blog_post,
+        'cache': create_cache_file,
     }
     # Removing python command if this utility is called with a python command
     python_cmd_list = [ 'python', 'python2', 'python3', 'py2', 'py3' ]

@@ -9,7 +9,7 @@ nav_link_order: 1
         </div>
         <div class="row">
             <div class="col">
-                <img src="images/MasaakiYana_main.png" alt="MyPic" class="img-fluid img-thumbnail"  >
+                <img onclick="myFunction()" src="images/MasaakiYana_main.png" alt="MyPic" class="img-fluid img-thumbnail"  >
             </div>
             <div class="col-8">
                 <h2>I'm <b>Masaaki Yana</b>.</h2>

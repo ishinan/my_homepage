@@ -11,7 +11,9 @@ def usage():
     print(f"""Usage:
     {utility_name} new           : To create a new content html file
     {utility_name} build         : To create static html files based on templates and contents
-    {utility_name} new-blog-post : To create a new blog page
+    {utility_name} new-blog-post : To create a new blog page 
+                                - Requires a markdown file
+                                - Try a sample file(./samples/sample_blog.md)
     """)
 
 def build_static_site():

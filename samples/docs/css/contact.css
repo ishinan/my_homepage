@@ -1,0 +1,27 @@
+.contact_info {
+    /* background-color: #A0B29A; */
+    background-image: url(../images/papyrus.png);
+}
+
+.contact_item {
+    margin: 10px;
+}
+.contact_item_title {
+    color: #B34C3B;
+    font-family: 'Lato Bold', sans-serif;
+}
+.contact_item_value {
+    /* font-family: Arial, Helvetica, sans-serif; */
+    font-family: "Courier New", Courier, monospace;
+    font-weight: bold;
+    color: #737272;
+}
+
+.btn-primary {
+    background-color: #347474;
+    border-color: #347474;
+}
+.btn-primary:hover {
+    background-color: #265555;
+    border-color: #265555;
+}

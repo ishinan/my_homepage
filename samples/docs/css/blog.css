@@ -1,0 +1,23 @@
+.media_image {
+    height: 150px;
+    border-radius: 20px;
+}
+
+.media_image_in_blog {
+    border-radius: 30px;
+    height: 350px;
+}
+
+.summary_subject {
+    background-color: rgba(119, 136, 153, 0.6);
+    border-radius: 25px;
+}
+
+.jbtron_in_blog {
+    background-color: rgba(47,79,79);
+}
+
+.second-block {
+    margin: 50px;
+    
+}

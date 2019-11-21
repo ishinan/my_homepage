@@ -1,16 +1,15 @@
 """
-Version: 
+File name: utils.py
+
 Feature:
-    static site generator
-    Read a template html file and contents html files, and create html files
+    core engine of a static site generator
+    Read template html files and contents html files, and then create static html files
 
-Regquirements
-    - templates directory: base html template files: 'base.html' and 'blog_base.html'
-    - content dirctory: contains html files as html content for each page
-    - docs directory: ssg will output final html files to this directory
-
-Change Log:
-    - N/A
+Requirements
+    - templates directory: Jinja2 type of template files; e.g. 'base.html', 'blog_base.html'
+    - content   directory: contains md files as metadata and html content for each page
+    - blog      directory: contains md files as metadata and html content for each page
+    - docs      directory: ssg will output final html files to this directory
 
 Future Plan:
     - Add test_build.py and run unittest
@@ -18,29 +17,21 @@ Future Plan:
 """
 import os
 import datetime
+from shutil import copyfile
 import logging
 import logging.config
 import inspect
+import json
 from jinja2 import Environment, FileSystemLoader
 import markdown
 
-# Read log.cfg file for loggeing congiguration
+
+# Read log.cfg file for logging congiguration
 logging.config.fileConfig('log.cfg')
 
 
-# To map html file name with title tag
-data_title = {
-    'index': 'Home',
-    'projects': 'Projects',
-    'blog': 'Blog',
-    'contact':  'Contact',
-    'new_content':  'New Content',
-    '1':  'Blog 1',
-    '2':  'Blog 2',
-    '3':  'Blog 3',
-    '4':  'Blog 4',
-}
-
+# Define global cache file name
+dir_cache_file_name = '_dir_cache.json'
 # Order is importnat for nav. So we use list data type
 data_nav_list = [
     {'filename': 'index.html', 'title': 'Home'},
@@ -48,31 +39,30 @@ data_nav_list = [
     {'filename': 'blog.html', 'title': 'Blog'},
     {'filename': 'contact.html', 'title': 'Contact'},
 ]
-
-
-# Create a list of dictionaries containing page info
+# A list of dictionaries containing page info
 pages = []
-
-# Static Blog page info
+# A list of static blog page info
 blog_posts = []
+
 
 def get_current_datetime():
     '''
-    Get year, month, day, hour, min from datetime module
+    Get date/time info(year, month, date, hour, min) from datetime module
+
     return:
-        datetime dictionary { year, month, day, hour, minute }
+        datetime dictionary of year, month, date, hour, minute 
     '''
     now = datetime.datetime.now()
-    return { 'year': now.year, 
-             'month': now.month,
-             'day': now.day,
-             'hour': now.hour,
-             'minute': now.minute
+    return { 'year': now.strftime('%Y'), 
+             'month': now.strftime('%m'),
+             'date': now.strftime('%d'),
+             'hour': now.strftime('%H'),
+             'minute': now.strftime('%M')
             }
 
 def get_current_year():
     '''
-    Get current year
+    Get the current year
 
     return:
         current_year as integer
@@ -84,6 +74,8 @@ def ask_contents():
     '''
     Ask user input for 
         'page_title', 'main_subject', 'main_comments', 'body_paragraph',
+    return:
+        user_input_data 
     '''
     item_list = [ 'page_title', 'main_subject', 'main_comments', 'body_paragraph' ]
     user_input_data = {}
@@ -98,6 +90,7 @@ def ask_contents():
 def read_template_html(template_dir=".", template_file_path=""):
     '''
     Read from a template html file and return a Jinja Template object
+
     parameter:
         template_file_path: string to path to a template html file
     return:
@@ -110,16 +103,21 @@ def read_template_html(template_dir=".", template_file_path=""):
     logger.debug(f"template file path: {target_path}" )
     jinja_env = Environment(loader=FileSystemLoader(os.path.dirname(target_path)), 
                       keep_trailing_newline=True)
+
     return  jinja_env.get_template(os.path.basename(target_path))
 
 def read_html_md_file(file_path):
     '''
     Read a html exntention file and return its content as string
-    Read a md exntention file and return its content and meta key values
+    Read a md exntention file and return its content and metadata
+
     parameter: 
         file_path
     return: 
-        content [ 'html string', 
+        a list of conetent and metadata dict 
+            - Note that metadata value is a list
+            - Example: 
+                [ 'html string', 
                   { 'key': [ 'value', ], 
                     'key': [ 'value' ],
                   },
@@ -144,9 +142,68 @@ def read_html_md_file(file_path):
 
     return [ "Could not find a content file(.html or .md)" + file_path, {}, ]
 
-def write_content_to_file(file_path, file_content="string", metadata={'title': "Default"}):
+def read_json_file(file_path=dir_cache_file_name):
     '''
-    Write html contents to a file 
+    Read a file which contains json formartted stings, convert(load) it and return 
+    a proper python object
+
+    parameters:
+        file_path: default _dir_cache.json in the current directory
+
+    return
+        An object loaded from the file content
+            Python       JSON 
+            ---------------------
+            dict         object 
+            list,tuple   array 
+            str          string 
+            int,float    number 
+            True         true 
+            False        false 
+            None         null 
+            ---------------------
+    '''
+    content = None
+    if os.path.isfile(file_path):
+        with open(file_path, 'r') as f_json:
+            content = json.load(f_json)
+    return content
+
+def write_json_to_file(file_path=dir_cache_file_name, json_data={ "default": "default" }):
+    '''
+    Write json object to a file 
+    Content must be a proper python object
+
+    parameters:
+        file_path: default "_dir_cache.json" in the current directory
+        json_data 
+
+    return
+        An object loaded from the file content
+            Python       JSON 
+            ---------------------
+            dict         object 
+            list,tuple   array 
+            str          string 
+            int,float    number 
+            True         true 
+            False        false 
+            None         null 
+            ---------------------
+    '''
+    if os.path.isfile(file_path):
+        with open(file_path, 'w') as f_json:
+            json.dump(json_data, f_json)
+            return file_path
+
+    return "Failed_to_write_data_to_a_file: " + file_path
+
+def write_content_to_file(file_path, file_content, metadata={'title': 'Default'}):
+    '''
+    Write content to a file 
+        if destination_path is html, write content to it
+        if destination_path is md, write metadata and content to it
+        if destination_path is a json, write content to it by json format
     parameter:
         file_path: a path to html file
         file_content: html content string
@@ -166,22 +223,14 @@ def write_content_to_file(file_path, file_content="string", metadata={'title': "
         content += '\n\n' + file_content
 
     with open(file_path, 'w') as f_target:
-        f_target.writelines(content)
+        if file_path.endswith('.json'):
+            json.dump(file_content, f_target)
+        else:
+            f_target.writelines(content)
         logger.info(f"Created {file_path}")
-        return
+        return file_path
 
-    return "Could not find a content html file" + file_path
-
-def write_blog_md_file(file_path, blog_meta_and_cotent={}):
-    '''
-    Write a new blog content and metadata to a md file
-    parameters:
-        file_path
-        blog_meta_and_content 
-    return:
-        None
-    '''
-    pass
+    return "Could not write to a file: " + file_path
 
 def create_page_list(content_dir='content', content_type='md', target_dir='docs'):
     '''
@@ -206,23 +255,17 @@ def create_page_list(content_dir='content', content_type='md', target_dir='docs'
         a dictionary of 'content_path', 'file_name', 'html_name', 'target_path', 'title' 
     '''
     for curr_dir, list_dirs, list_files in os.walk(content_dir):
-        # This lambda is to parse only '.html' or '.md' extention files
         for content_file in filter(lambda fname: fname.endswith(content_type), list_files):
-            # This could be either, .html or .md file path
             content_path = os.path.join(curr_dir, content_file)
-            # content file name and extension
             content_file_name, ext = os.path.splitext(content_file)
-            # target_path is an html file path
             target_file_name = content_file_name + ".html"
             target_path = os.path.join(target_dir, target_file_name)
 
-            # data_title is a dictionary mapping to tile based on html file name
             yield {
                     'content_path': content_path,
                     'file_name': content_file_name,
                     'html_name': target_file_name,
                     'target_path': target_path,
-                    #'title': data_title[content_file_name],
                   }
 
 def create_blog_metadata_list(blog_page_list=[]):
@@ -245,20 +288,23 @@ def create_blog_metadata_list(blog_page_list=[]):
             meta_data['html_name'] = blog_page['html_name']
             list_blog_metadata.append(meta_data)
 
+    if  len(list_blog_metadata) > 0:
+        list_blog_metadata = sorted(list_blog_metadata , key=lambda x: int(x['html_name'].replace(".html", "")), reverse=True )
     return list_blog_metadata 
 
 def create_full_html_content(template_content, nav_list=[], html_info={}, list_blog_info=[]):
     '''
     Build a full conetent of html file
     Return a html content as a string of html content
+
     parameters:
         template_content: Jinja Template object 
-        nav_list: a list of dictionaries of "filename" and "title" for each page
-        html_info: a dictionary about a page
-        list_blog_info: if page is a blog, need this to populate a blog summary page
-                        This is a list of dictionaries
+        nav_list        : a list of dictionaries of "filename" and "title" for each page
+        html_info       : a dictionary about a page
+        list_blog_info  : if page is a blog, need this to populate a blog summary page
+                          This is a list of dictionaries
     return:
-        a html conetent as a string
+        html conetent as string obj
     '''
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
@@ -268,8 +314,6 @@ def create_full_html_content(template_content, nav_list=[], html_info={}, list_b
     logger.debug(f"meta_data: {meta_data}" )
     content_dir = os.path.dirname(html_info['content_path'])
     logger.debug(f"content_dir: {content_dir}" )
-    if  len(list_blog_info) > 0:
-        list_blog_info = sorted(list_blog_info, key=lambda x: int(x['html_name'].replace(".html", "")), reverse=True )
     # page_title from either md's meta or html_info['title']
     page_title = meta_data['title'][0] if meta_data['title'] else html_info['title']  
     copyright_year = get_current_year()
@@ -287,20 +331,20 @@ def create_full_html_content(template_content, nav_list=[], html_info={}, list_b
 
 def build_html_files(template_dir='templates', content_dir='content', content_type='md', target_dir='docs'):
     '''
-    Steps:
-        1. Read jinja template files( base.html and blog_base.html )
+    This function does: 
+        1. Read jinja template files(e.g. base.html, blog_base.html )
         2. Create a page list 
         3. Read each content html from page list
         4. Render a jinja template based on the page data
         5. Write the result to a html file
+
     parameter:
-        template_dir: dir path to read 'base.html' template
-        content_dir: dir path to read conetnt html files
+        template_dir: dir path to jinja2 template files
+        content_dir: dir path  to conetnt md/html files
         content_type: 'html' or 'md'
         target_dir: dir path to write final html files
     return:
         None
-        Create html files under target_dir
     '''
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
@@ -309,7 +353,6 @@ def build_html_files(template_dir='templates', content_dir='content', content_ty
     blog_template = read_template_html(template_dir=template_dir, template_file_path="blog_base.html")
     each_blog_template = read_template_html(template_dir=template_dir, template_file_path="each_blog_page_base.html")
 
-    # Create html page based on template html and content html files
     pages = [ page for page in create_page_list(content_dir=content_dir, content_type='md', target_dir=target_dir) ]
                 
     # Combine template, content, meta data
@@ -331,6 +374,7 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
                             content_dict={}, content_dir='content', target_name='new_content.md'):
     '''
     Create a new content file
+
     parameters:
         content_base_template: default "templates/new_content_base.html"
         content_dict: { 'page_title': "value", 
@@ -368,25 +412,99 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
     write_content_to_file(target_path, new_content)
     logger.info(f"Created a new content file: {target_path}")
 
-def build_new_blog_post():
+def get_new_blog_file_path(target_dir='blog'):
     '''
-    build a new blog post md file under blog dirctory by asking user inputs
+    Check 'blog/_dir_cache.json, and find the next file name.
+    Return a new file path
 
-    return 
-        blog_file_path e.g. 'blog/5.md'
+    return
+        a string file path; e.g. 5.md
+    '''
+    cache_file_path = os.path.join(target_dir, dir_cache_file_name)
+    if not os.path.isfile(cache_file_path):
+        create_file_list_cache(target_dir=target_dir)
+    cache_content = read_json_file(cache_file_path)
+    new_file_number = len(cache_content['list_files']) + 1
+    new_file_name = str(new_file_number) + ".md"
+    new_blog_md_path = os.path.join(target_dir, new_file_name)
+
+    return new_blog_md_path
+
+def create_new_blog_content(target_dir='blog', source_path=''):
+    '''
+    Read a md file, check metadata, and create a new blog md file in 'blog' dir.
+    then, return created blog content in target_dir('blog')
+
+    parameters:
+        source_path: user created markdown file containing a blog content and blog metadata
+                     required metadata:
+                        title, subject, created_date, image, image_alt, short_summary
+    return:
+        a string name of a path to blog md file (example, 'blog/5.md')
     '''
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName) 
 
-    print("build_new_blog_post() was called")
-    # 1. Read a user input 
-    #   - Should accept a md file, read the content
-    #   - A provided md file must contain required metadata such as title, subject, image
-    # 2. Write the result to "blog" directory as a md format, incremented file number
-    #       - date time is automatically added
-    #       - date time is automatically added
-   
+    new_file_path = get_new_blog_file_path(target_dir=target_dir)
+    if source_path.endswith('.md') and os.path.isfile(source_path):
+        copyfile(source_path, new_file_path)
 
+    # Update the cache 
+    create_file_list_cache(target_dir=target_dir)
+    return new_file_path
+
+def create_file_list_cache(target_dir='.', file_ext='.md'):
+    '''
+    Create a cache file to keep file list in the directory
+         cache file name: _dir_cache.json
+         It contains, the diretory name and list of files 
+         It is a json format
+            {"dir_name": "blog", "list_files": ["5.md", "1.md", "4.md", "3.md", "2.md"], "created_time": "20191120_946"}
+
+    parameter:
+        target_dir
+    return:
+        created file path './blog/_dir.cache'
+    '''
+    t = get_current_datetime()
+    created_time = str(t['year']) + str(t['month']) + str(t['date']) + "_" + str(t['hour']) + str(t['minute'])
+
+    for curr, list_dirs, list_files in os.walk(target_dir):
+        if dir_cache_file_name in list_files:
+            list_files.remove(dir_cache_file_name)
+
+    cache_content =  { 'dir_name': target_dir,
+                       'list_files': list_files, 
+                       'created_time': created_time,
+                     }
+    target_path = os.path.join(target_dir, dir_cache_file_name)
+    write_content_to_file(target_path, cache_content)
+    return target_path 
+
+def build_new_blog_post():
+    '''
+    build a new blog post md file under blog dirctory by asking user inputs
+        Currently only a markdown file(.md) is accepted
+        A provided md file must contain required metadata such as title, subject, image
+
+    return:
+        blog_file_path e.g. 'blog/5.md'
+    '''
+    loggerName = inspect.stack()[0][3]
+    logger = logging.getLogger(loggerName) 
+    
+    user_input_blog_file_path = ''
+    while True: 
+        file_path = input('Provide a file path to a blog post markdown(.md) file: ')
+        if file_path.endswith('.md') and os.path.isfile(file_path):
+            user_input_blog_file_path = file_path
+            break
+        print("Cannot find the markdown(.md) file")
+
+    logger.debug(f"Accepted user input: {user_input_blog_file_path}")
+    blog_file_path = create_new_blog_content(source_path=user_input_blog_file_path)
+
+    return blog_file_path
 
 def main():
     build_html_files()

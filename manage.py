@@ -5,7 +5,7 @@ import utils
 
 def usage():
     '''
-    print usage if arguments is not proper
+    Print usage of this CLI tool 
     '''
     utility_name = os.path.basename(sys.argv[0])
     print(f"""Usage:
@@ -16,15 +16,14 @@ def usage():
 
 def build_static_site():
     '''
-    build static site from the current content
+    Build static site from the files in "content" directory 
     '''
-    # This create main html files
     utils.build_html_files()
 
 def build_new_blog_post():
     '''
-    build a new blog post md file under blog dirctory by asking user inputs, 
-    and populate a blog_post_{number}.html file under docs directory
+    Build a new blog post md file under blog dirctory by asking user inputs, 
+    and populate a {number}.html file under docs directory
     '''
     f_path = utils.build_new_blog_post()
     print(f"Created: {f_path}")
@@ -35,14 +34,14 @@ def cache_update():
 
 def create_new_content_file():
     '''
-    create a new content file in 'content' directory
+    Create a new content file in 'content' directory
     '''
     content_dict_user_input = utils.ask_contents()
     utils.create_new_content_file(content_dict=content_dict_user_input)
 
 def main():
     '''
-    Run utils with argements(new or build). 
+    Run utils with argements, or pring this tool's usage
     '''
     func_list = {
         'new': create_new_content_file,

@@ -1,16 +1,15 @@
 """
-Version: 
+File name: utils.py
+
 Feature:
-    static site generator
-    Read a template html file and contents html files, and create html files
+    core engine of a static site generator
+    Read template html files and contents html files, and then create static html files
 
-Regquirements
-    - templates directory: base html template files: 'base.html' and 'blog_base.html'
-    - content dirctory: contains html files as html content for each page
-    - docs directory: ssg will output final html files to this directory
-
-Change Log:
-    - N/A
+Requirements
+    - templates directory: Jinja2 type of template files; e.g. 'base.html', 'blog_base.html'
+    - content   directory: contains md files as metadata and html content for each page
+    - blog      directory: contains md files as metadata and html content for each page
+    - docs      directory: ssg will output final html files to this directory
 
 Future Plan:
     - Add test_build.py and run unittest
@@ -26,23 +25,12 @@ import json
 from jinja2 import Environment, FileSystemLoader
 import markdown
 
-# Read log.cfg file for loggeing congiguration
-logging.config.fileConfig('log.cfg')
 
+# Read log.cfg file for logging congiguration
+logging.config.fileConfig('log.cfg')
 # Define global cache file name
 dir_cache_file_name = '_dir_cache.json'
 # To map html file name with title tag
-data_title = {
-    'index': 'Home',
-    'projects': 'Projects',
-    'blog': 'Blog',
-    'contact':  'Contact',
-    'new_content':  'New Content',
-    '1':  'Blog 1',
-    '2':  'Blog 2',
-    '3':  'Blog 3',
-    '4':  'Blog 4',
-}
 
 # Order is importnat for nav. So we use list data type
 data_nav_list = [
@@ -240,13 +228,11 @@ def create_page_list(content_dir='content', content_type='md', target_dir='docs'
             target_file_name = content_file_name + ".html"
             target_path = os.path.join(target_dir, target_file_name)
 
-            # data_title is a dictionary mapping to tile based on html file name
             yield {
                     'content_path': content_path,
                     'file_name': content_file_name,
                     'html_name': target_file_name,
                     'target_path': target_path,
-                    #'title': data_title[content_file_name],
                   }
 
 def create_blog_metadata_list(blog_page_list=[]):

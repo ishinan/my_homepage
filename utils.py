@@ -28,10 +28,10 @@ import markdown
 
 # Read log.cfg file for logging congiguration
 logging.config.fileConfig('log.cfg')
+
+
 # Define global cache file name
 dir_cache_file_name = '_dir_cache.json'
-# To map html file name with title tag
-
 # Order is importnat for nav. So we use list data type
 data_nav_list = [
     {'filename': 'index.html', 'title': 'Home'},
@@ -39,31 +39,30 @@ data_nav_list = [
     {'filename': 'blog.html', 'title': 'Blog'},
     {'filename': 'contact.html', 'title': 'Contact'},
 ]
-
-
-# Create a list of dictionaries containing page info
+# A list of dictionaries containing page info
 pages = []
-
-# Static Blog page info
+# A list of static blog page info
 blog_posts = []
+
 
 def get_current_datetime():
     '''
-    Get year, month, day, hour, min from datetime module
+    Get date/time info(year, month, date, hour, min) from datetime module
+
     return:
-        datetime dictionary { year, month, day, hour, minute }
+        datetime dictionary of year, month, date, hour, minute 
     '''
     now = datetime.datetime.now()
     return { 'year': now.strftime('%Y'), 
              'month': now.strftime('%m'),
-             'day': now.strftime('%d'),
+             'date': now.strftime('%d'),
              'hour': now.strftime('%H'),
              'minute': now.strftime('%M')
             }
 
 def get_current_year():
     '''
-    Get current year
+    Get the current year
 
     return:
         current_year as integer
@@ -75,6 +74,8 @@ def ask_contents():
     '''
     Ask user input for 
         'page_title', 'main_subject', 'main_comments', 'body_paragraph',
+    return:
+        user_input_data 
     '''
     item_list = [ 'page_title', 'main_subject', 'main_comments', 'body_paragraph' ]
     user_input_data = {}
@@ -89,6 +90,7 @@ def ask_contents():
 def read_template_html(template_dir=".", template_file_path=""):
     '''
     Read from a template html file and return a Jinja Template object
+
     parameter:
         template_file_path: string to path to a template html file
     return:
@@ -101,16 +103,21 @@ def read_template_html(template_dir=".", template_file_path=""):
     logger.debug(f"template file path: {target_path}" )
     jinja_env = Environment(loader=FileSystemLoader(os.path.dirname(target_path)), 
                       keep_trailing_newline=True)
+
     return  jinja_env.get_template(os.path.basename(target_path))
 
 def read_html_md_file(file_path):
     '''
     Read a html exntention file and return its content as string
-    Read a md exntention file and return its content and meta key values
+    Read a md exntention file and return its content and metadata
+
     parameter: 
         file_path
     return: 
-        content [ 'html string', 
+        a list of conetent and metadata dict 
+            - Note that metadata value is a list
+            - Example: 
+                [ 'html string', 
                   { 'key': [ 'value', ], 
                     'key': [ 'value' ],
                   },
@@ -137,13 +144,14 @@ def read_html_md_file(file_path):
 
 def read_json_file(file_path=dir_cache_file_name):
     '''
-    Read a file which contains json formartted stings, convert(load) it and return
+    Read a file which contains json formartted stings, convert(load) it and return 
+    a proper python object
 
     parameters:
         file_path: default _dir_cache.json in the current directory
 
     return
-        object loaded from the file content
+        An object loaded from the file content
             Python       JSON 
             ---------------------
             dict         object 
@@ -161,7 +169,36 @@ def read_json_file(file_path=dir_cache_file_name):
             content = json.load(f_json)
     return content
 
-def write_content_to_file(file_path, file_content, metadata={'title': "Default"}):
+def write_json_to_file(file_path=dir_cache_file_name, json_data={ "default": "default" }):
+    '''
+    Write json object to a file 
+    Content must be a proper python object
+
+    parameters:
+        file_path: default "_dir_cache.json" in the current directory
+        json_data 
+
+    return
+        An object loaded from the file content
+            Python       JSON 
+            ---------------------
+            dict         object 
+            list,tuple   array 
+            str          string 
+            int,float    number 
+            True         true 
+            False        false 
+            None         null 
+            ---------------------
+    '''
+    if os.path.isfile(file_path):
+        with open(file_path, 'w') as f_json:
+            json.dump(json_data, f_json)
+            return file_path
+
+    return "Failed_to_write_data_to_a_file: " + file_path
+
+def write_content_to_file(file_path, file_content, metadata={'title': 'Default'}):
     '''
     Write content to a file 
         if destination_path is html, write content to it
@@ -218,13 +255,9 @@ def create_page_list(content_dir='content', content_type='md', target_dir='docs'
         a dictionary of 'content_path', 'file_name', 'html_name', 'target_path', 'title' 
     '''
     for curr_dir, list_dirs, list_files in os.walk(content_dir):
-        # This lambda is to parse only '.html' or '.md' extention files
         for content_file in filter(lambda fname: fname.endswith(content_type), list_files):
-            # This could be either, .html or .md file path
             content_path = os.path.join(curr_dir, content_file)
-            # content file name and extension
             content_file_name, ext = os.path.splitext(content_file)
-            # target_path is an html file path
             target_file_name = content_file_name + ".html"
             target_path = os.path.join(target_dir, target_file_name)
 
@@ -263,14 +296,15 @@ def create_full_html_content(template_content, nav_list=[], html_info={}, list_b
     '''
     Build a full conetent of html file
     Return a html content as a string of html content
+
     parameters:
         template_content: Jinja Template object 
-        nav_list: a list of dictionaries of "filename" and "title" for each page
-        html_info: a dictionary about a page
-        list_blog_info: if page is a blog, need this to populate a blog summary page
-                        This is a list of dictionaries
+        nav_list        : a list of dictionaries of "filename" and "title" for each page
+        html_info       : a dictionary about a page
+        list_blog_info  : if page is a blog, need this to populate a blog summary page
+                          This is a list of dictionaries
     return:
-        a html conetent as a string
+        html conetent as string obj
     '''
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
@@ -297,20 +331,20 @@ def create_full_html_content(template_content, nav_list=[], html_info={}, list_b
 
 def build_html_files(template_dir='templates', content_dir='content', content_type='md', target_dir='docs'):
     '''
-    Steps:
-        1. Read jinja template files( base.html and blog_base.html )
+    This function does: 
+        1. Read jinja template files(e.g. base.html, blog_base.html )
         2. Create a page list 
         3. Read each content html from page list
         4. Render a jinja template based on the page data
         5. Write the result to a html file
+
     parameter:
-        template_dir: dir path to read 'base.html' template
-        content_dir: dir path to read conetnt html files
+        template_dir: dir path to jinja2 template files
+        content_dir: dir path  to conetnt md/html files
         content_type: 'html' or 'md'
         target_dir: dir path to write final html files
     return:
         None
-        Create html files under target_dir
     '''
     loggerName = inspect.stack()[0][3]
     logger = logging.getLogger(loggerName)
@@ -319,7 +353,6 @@ def build_html_files(template_dir='templates', content_dir='content', content_ty
     blog_template = read_template_html(template_dir=template_dir, template_file_path="blog_base.html")
     each_blog_template = read_template_html(template_dir=template_dir, template_file_path="each_blog_page_base.html")
 
-    # Create html page based on template html and content html files
     pages = [ page for page in create_page_list(content_dir=content_dir, content_type='md', target_dir=target_dir) ]
                 
     # Combine template, content, meta data
@@ -341,6 +374,7 @@ def create_new_content_file(content_base_template='templates/new_content_base.ht
                             content_dict={}, content_dir='content', target_name='new_content.md'):
     '''
     Create a new content file
+
     parameters:
         content_base_template: default "templates/new_content_base.html"
         content_dict: { 'page_title': "value", 
@@ -390,13 +424,11 @@ def get_new_blog_file_path(target_dir='blog'):
     if not os.path.isfile(cache_file_path):
         create_file_list_cache(target_dir=target_dir)
     cache_content = read_json_file(cache_file_path)
-
-    print(type(cache_content))
     new_file_number = len(cache_content['list_files']) + 1
     new_file_name = str(new_file_number) + ".md"
-    os.path.join(target_dir, new_file_name)
+    new_blog_md_path = os.path.join(target_dir, new_file_name)
 
-    return os.path.join(target_dir, new_file_name)
+    return new_blog_md_path
 
 def create_new_blog_content(target_dir='blog', source_path=''):
     '''
@@ -421,7 +453,6 @@ def create_new_blog_content(target_dir='blog', source_path=''):
     create_file_list_cache(target_dir=target_dir)
     return new_file_path
 
-
 def create_file_list_cache(target_dir='.', file_ext='.md'):
     '''
     Create a cache file to keep file list in the directory
@@ -436,7 +467,7 @@ def create_file_list_cache(target_dir='.', file_ext='.md'):
         created file path './blog/_dir.cache'
     '''
     t = get_current_datetime()
-    created_time = str(t['year']) + str(t['month']) + str(t['day']) + "_" + str(t['hour']) + str(t['minute'])
+    created_time = str(t['year']) + str(t['month']) + str(t['date']) + "_" + str(t['hour']) + str(t['minute'])
 
     for curr, list_dirs, list_files in os.walk(target_dir):
         if dir_cache_file_name in list_files:
@@ -474,7 +505,6 @@ def build_new_blog_post():
     blog_file_path = create_new_blog_content(source_path=user_input_blog_file_path)
 
     return blog_file_path
-
 
 def main():
     build_html_files()
